@@ -3,5 +3,14 @@ class LoginController < ActionController::Base
   end
 
   def auth
+
+
+
   end
+
+  def create
+
+  end
+
+  private
 end
