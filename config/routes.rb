@@ -6,13 +6,15 @@ Rails.application.routes.draw do
   namespace 'login' do
     get 'index'
     get 'auth'
-    post 'create'
   end
 
-  scope 'api' do
+  scope 'api', defaults: { format: :json } do
     scope 'v1' do
+      resources :hits
       resources :tags
       resources :photos
+
+      get 'balance', controller: 'tests'
     end
   end
 

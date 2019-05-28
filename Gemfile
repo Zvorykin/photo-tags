@@ -4,23 +4,22 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby '2.6.3'
 
 # Web
-gem 'rails', '~> 5.2.3'
 gem 'puma', '~> 3.11'
+gem 'rails', '~> 5.2.3'
 # gem 'rack-cors'
 
 # API
+gem 'blueprinter'
 gem 'devise'
 gem 'rails_param'
-gem 'blueprinter'
 
 # Database
-gem 'mongoid', '~> 7.0'
 gem 'bcrypt', '~> 3.1.7'
 gem 'bson_ext'
+gem 'mongoid', '~> 7.0'
 
 # Utils
 gem 'aws-sdk'
-gem 'faraday'
 
 # Swagger
 gem 'rswag-api'
@@ -38,8 +37,9 @@ group :development do
 end
 
 group :development, :test do
-  gem 'rspec-rails', '~> 3.8'
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'factory_bot_rails'
+  gem 'rspec-rails', '~> 3.8'
 end
 
 group :test do
@@ -49,6 +49,6 @@ group :test do
   gem 'mongoid-rspec'
 
   gem 'capybara', '>= 2.15'
-  gem 'selenium-webdriver'
   gem 'rswag-specs'
+  gem 'selenium-webdriver'
 end
