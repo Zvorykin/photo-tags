@@ -1,11 +1,14 @@
 class HitsController < ApplicationController
-  before_action :set_hit, only: %i[show update destroy]
-  
+  # before_action :set_hit, only: %i[show update destroy]
+
   # GET /hits
   def index
-    result = MturkService.list_hits(50)
+    param! :amount, Integer
+    param! :next_token, String
 
-    respond_with ListHitsResponceSerializer.render(result)
+    result = MturkService.list_hits(params)
+
+    respond_with ListHitsResponseSerializer.render(result)
   end
 
   # GET /hits/1
@@ -15,13 +18,17 @@ class HitsController < ApplicationController
 
   # POST /hits
   def create
-    @hit = Hit.new(hit_params)
+    param! :title, String, required: true
+    param! :description, String, required: true
+    param! :reward, Float, required: true
+    param! :assignment_duration, Integer, required: true
+    param! :lifetime, Integer, required: true
 
-    if @hit.save
-      render json: @hit, status: :created, location: @hit
-    else
-      render json: @hit.errors, status: :unprocessable_entity
-    end
+    result = MturkService.create_hit(params)
+
+    p result
+
+    respond_with {}
   end
 
   # PATCH/PUT /hits/1
@@ -43,10 +50,5 @@ class HitsController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_hit
     @hit = Hit.find(params[:id])
-  end
-
-  # Only allow a trusted parameter "white list" through.
-  def hit_params
-    params.fetch(:hit, {})
   end
 end

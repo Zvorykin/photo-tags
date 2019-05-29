@@ -1,14 +1,24 @@
 <template lang="pug">
   #app
-    p {{ message }}
+    HitsGrid
 </template>
 
 <script>
+  import HitsGrid from './packs/components/hits_grid'
+
   export default {
-    data: function () {
-      return {
-        message: "Hello Vue!123",
-      }
+    components: { HitsGrid },
+    data() {
+      return {}
+    },
+    async created() {
+      this.$Loading.config({
+        height: 5,
+      })
+
+      this.axios.defaults.baseURL = `${ location.origin }/api`
+      this.axios.defaults.headers.common['Content-Type'] = 'application/json'
+      this.axios.defaults.headers.common['Accept'] = 'application/json'
     },
   }
 </script>
@@ -29,5 +39,16 @@
 
   .ivu-tabs-bar {
     height: 35px;
+  }
+
+  .drawer-footer {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    border-top: 1px solid #e8e8e8;
+    padding: 10px 16px;
+    text-align: right;
+    background: #fff;
   }
 </style>

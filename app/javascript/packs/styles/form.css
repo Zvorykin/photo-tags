@@ -6,7 +6,7 @@
 
 .ivu-form-item-label {
     line-height: 6px !important;
-    padding-bottom: 0 !important;
+    /*padding-bottom: 0 !important;*/
     padding-right: 5px !important;
 }
 

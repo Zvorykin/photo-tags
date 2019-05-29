@@ -1,11 +1,6 @@
 require 'aws-sdk'
 
 class TestsController < ApplicationController
-  def hits
-    result = MturkService.list_hits
-
-    render json: ListHitsResponceSerializer.render(result)
-  end
 
   def new
     mturk = client

@@ -16,8 +16,8 @@ Rails.application.routes.draw do
 
       get 'balance', controller: 'tests'
     end
-  end
 
-  mount Rswag::Ui::Engine => '/api-docs'
-  mount Rswag::Api::Engine => '/api-docs'
+    mount Rswag::Ui::Engine => '/docs'
+    mount Rswag::Api::Engine => '/docs'
+  end
 end

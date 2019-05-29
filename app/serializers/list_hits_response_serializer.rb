@@ -1,4 +1,4 @@
-class ListHitsResponceSerializer < Blueprinter::Base
+class ListHitsResponseSerializer < Blueprinter::Base
   fields :next_token, :num_results
 
   association :hits, blueprint: HitSerializer
