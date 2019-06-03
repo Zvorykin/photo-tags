@@ -26,9 +26,15 @@ class HitsController < ApplicationController
 
     result = MturkService.create_hit(params)
 
-    p result
+    # p result
 
-    respond_with {}
+    hash = {
+      name: '123123'
+    }
+
+    render json: hash.to_json
+
+    # respond_with hash.to_json
   end
 
   # PATCH/PUT /hits/1
@@ -45,10 +51,18 @@ class HitsController < ApplicationController
     @hit.destroy
   end
 
-  private
+  def assignments
+    param! :hit_id, String, required: true
 
-  # Use callbacks to share common setup or constraints between actions.
-  def set_hit
-    @hit = Hit.find(params[:id])
+    hit_id = params[:hit_id]
+    result = MturkService.hit_assignments(hit_id)
+
+    p result
+
+    hash = {}
+
+    render json: hash.to_json
   end
+
+  private
 end

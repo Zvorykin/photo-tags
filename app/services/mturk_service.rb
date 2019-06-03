@@ -25,7 +25,7 @@ module MturkService
       reward = params[:reward].to_s
       assignment_duration = params[:assignment_duration]
       lifetime = params[:lifetime]
-      question = QuestionService.new.build_question
+      question = QuestionService.new.question
 
       client.create_hit(
         title: title,
@@ -34,6 +34,12 @@ module MturkService
         assignment_duration_in_seconds: assignment_duration,
         lifetime_in_seconds: lifetime,
         question: question
+      )
+    end
+
+    def hit_assignments(id)
+      client.list_assignments_for_hit(
+        hit_id: id
       )
     end
 

@@ -1,38 +1,175 @@
-<HTMLQuestion xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2011-11-11/HTMLQuestion.xsd">
+<HTMLQuestion xmlns='http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2011-11-11/HTMLQuestion.xsd'>
   <HTMLContent><![CDATA[
     <!DOCTYPE html>
+    <html>
+    <head>
+      <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+      <!--  maybe it's better to serve autocomplete plugin by CDN but it's not necessary-->
+      <style type="text/css"><%= autocomplete_css %></style>
+      <script language='javascript'><%= autocomplete_js %></script>
+      <script language='javascript'><%= external_hit_js %></script>
+
+      <style type="text/css">
+        .left {
+          float: left;
+          width: 300px;
+          margin-right: 15px;
+        }
+
+        .tag-field {
+          width: 100%;
+          margin-bottom: 5px;
+        }
+
+        .form-entry {
+          margin-bottom: 5px;
+          border-bottom: #5b6270 1px dashed;
+        }
+      </style>
+      <script language='javascript'>
+        var PERMITTED_CHARS_REGEXP = /^[a-z ]*$/
+
+        function getChar(event) {
+          if (event.which == null) { // IE
+            if (event.keyCode < 32) return null // special symbol
+            return String.fromCharCode(event.keyCode)
+          }
+
+          if (event.which != 0 && event.charCode != 0) { // all except IE
+            if (event.which < 32) return null // special symbol
+            return String.fromCharCode(event.which)
+          }
+
+          return null // special symbol
+        }
+
+        function keyFilter(e) {
+          if (e.ctrlKey || e.altKey || e.metaKey) return false
+          var char = getChar(e)
+
+          if (!char) return // special symbol - do not process
+
+          if (!char.toLowerCase().match(PERMITTED_CHARS_REGEXP) || e.key === 'Enter') {
+            e.preventDefault()
+          }
+        }
+
+        function validateResult() {
+          var result = {}
+          for (var id in imagesInputNames) {
+            if (imagesInputNames.hasOwnProperty(id)) {
+              var resultTags = []
+
+              var names = imagesInputNames[id]
+              names.forEach(function (name) {
+                var value = document.getElementsByName(name)[0].value
+
+                if (value && value.length) {
+                  value = PERMITTED_CHARS_REGEXP.exec(value)
+
+                  if (value && value[0] && value[0].trim().length) {
+                    value = value[0].trim()
+
+                    if (resultTags.indexOf(value) === -1) {
+                      resultTags.push(value)
+                    }
+                  }
+                }
+              })
+
+              if (resultTags.length < MIN_TAGS_AMOUNT) {
+                alert('Some images are not tagged. Please fill minimal amount of tag fields')
+                return
+              }
+
+              result[id] = resultTags
+            }
+          }
+
+          return result
+        }
+
+        function submit(result) {
+          var resultJson = JSON.stringify(result)
+
+          var form = document.getElementById('mturk_form')
+          var resultElement = document.createElement('input')
+          resultElement.setAttribute('value', resultJson)
+          resultElement.setAttribute('type', 'text')
+          resultElement.setAttribute('visibility', 'hidden')
+          resultElement.setAttribute('name', 'result')
+          form.appendChild(resultElement)
+
+          form.submit()
+        }
+
+        function validateAndSubmit(e) {
+          e.preventDefault()
+
+          var result = validateResult()
+          if (!result) return false
+
+          submit(result)
+        }
+      </script>
+    </head>
     <body>
-    <script src="https://assets.crowd.aws/crowd-html-elements.js"></script>
-    <crowd-form>
-      <crowd-classifier
-        name="sentiment"
-        categories="['Positive', 'Negative', 'Neutral', 'N/A']"
-        header="What sentiment does this text convey?"
-      >
-        <classification-target>
-          Everything is wonderful.
-        </classification-target>
+    <form name='mturk_form' method='post' id='mturk_form'
+          onkeypress='keyFilter(event)'
+          onsubmit='validateAndSubmit(event);'
+          action='https://www.mturk.com/mturk/externalSubmit'>
+      <input type='hidden' value='' name='assignmentId' id='assignmentId'/>
 
-        <full-instructions header="Sentiment Analysis Instructions">
-          <p><strong>Positive</strong>
-            sentiment include: joy, excitement, delight</p>
-          <p><strong>Negative</strong> sentiment include:
-            anger, sarcasm, anxiety</p>
-          <p><strong>Neutral</strong>: neither positive or
-            negative, such as stating a fact</p>
-          <p><strong>N/A</strong>: when the text cannot be
-            understood</p>
-          <p>When the sentiment is mixed, such as both joy and sadness,
-            use your judgment to choose the stronger emotion.</p>
-        </full-instructions>
+      <% images.each do |image| %>
+        <div class='form-entry'>
+          <div class='left'>
+            <h4>Tags</h4>
+            <% max_tags_amount.times do |num| %>
+              <input autocomplete=off
+                     class='tag-field'
+                     placeholder="#<%= num + 1 %>"
+                     name='<%= "input-#{num + 1}-#{image[:id]}" %>'>
+            <% end %>
+          </div>
+          <div>
+            <img src='<%= image[:url] %>'>
+          </div>
+        </div>
+      <% end %>
 
-        <short-instructions>
-          Choose the primary sentiment that is expressed by the text.
-        </short-instructions>
-      </crowd-classifier>
-    </crowd-form>
+      <input type='submit' id='submitButton' value='Submit'/>
+    </form>
+
+    <script language='javascript'>turkSetAssignmentID()</script>
+    <script language='javascript'>
+      var imagesInputNames = <%= images_input_names.to_json %>;
+      var tags = <%= tags.to_json %>;
+      var MIN_TAGS_AMOUNT = <%= min_tags_amount %>;
+
+      for (var key in imagesInputNames) {
+        if (imagesInputNames.hasOwnProperty(key)) {
+          var names = imagesInputNames[key]
+
+          names.forEach(function (name) {
+            new autoComplete({
+              selector: 'input[name=<name>]'.replace('<name>', name),
+              minChars: 2,
+              source: function (term, suggest) {
+                term = term.toLowerCase()
+                var choices = tags
+                var suggestions = []
+                for (var i = 0; i < choices.length; i++)
+                  if (~choices[i].toLowerCase().indexOf(term)) suggestions.push(choices[i])
+                suggest(suggestions)
+              },
+            })
+          })
+        }
+      }
+    </script>
     </body>
     </html>
-    ]]></HTMLContent>
+    ]]>
+  </HTMLContent>
   <FrameHeight>0</FrameHeight>
 </HTMLQuestion>

@@ -6,9 +6,6 @@ AllCops:
 Style/Documentation:
   Enabled: false
 
-Layout/DotPosition:
-  EnforcedStyle: trailing
-
 Style/ClassAndModuleChildren:
   EnforcedStyle: nested
 
@@ -21,8 +18,8 @@ Style/RaiseArgs:
 Style/MultilineBlockChain:
   Enabled: false
 
-Style/FrozenStringLiteralComment:
-  Enabled: false
+Style/RegexpLiteral:
+  AllowInnerSlashes: true
 
 Metrics/LineLength:
   Max: 90

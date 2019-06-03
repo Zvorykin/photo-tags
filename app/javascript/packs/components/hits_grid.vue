@@ -1,19 +1,19 @@
-<template lang="pug">
-  Card(:dis-hover="true" id="card")
+<template lang='pug'>
+  Card(:dis-hover='true' id='card')
     p(slot='title') HITs
-    Button(slot="extra" size='default' icon="md-refresh-circle" @click="refresh" type='text'
-      shape="circle" class="refresh-card-button")
-    Form(:labelWidth="50", inline)
-      FormItem(:labelWidth="1")
-        Button(type='primary' size="small" icon="md-add" @click="showForm" shape="circle")
-      FormItem(:labelWidth="1")
-        Button(type='success', size="small", icon="md-create", @click="showForm", shape="circle")
-    Table(border :columns="table.columns" :data="table.data" @on-row-click="selectRow"
-      highlight-row max-height="600" :loading="loading")
-    Drawer(title='Create HIT' v-model="formVisible" placement="left" width="100")
-      HITCreateForm
-    //Modal(title='Create HIT' v-model="showCreateForm" fullscreen)
-      HITCreateForm
+    Button(slot='extra' size='default' icon='md-refresh-circle' @click='refresh'
+      type='text' shape='circle' class='refresh-card-button')
+    Form(:labelWidth='50', inline)
+      FormItem(:labelWidth='0')
+        Button(type='primary' size='small' icon='md-add' shape='circle'
+          @click='setFormVisible(true)')
+      FormItem(:labelWidth='0')
+        Button(type='success', size='small' icon='md-create' shape='circle'
+          @click='setFormVisible(true)')
+    Table(border :columns='table.columns' :data='table.data' @on-row-click='selectRow'
+      highlight-row max-height='600' :loading='loading')
+    Drawer(title='Create HIT' v-model='formVisible' placement='left' width='500')
+      HITCreateForm(v-on:hitsCreated='refresh')
 </template>
 
 <script>
@@ -43,6 +43,7 @@
       async refresh() {
         this.table.data = []
 
+        this.setFormVisible(false)
         await this.$errorHandle(this, this.reloadTable)
       },
       async reloadTable() {
@@ -55,39 +56,15 @@
 
         this.table.data = hits
       },
-      async createHITs(data) {
-        const { data: result } = await this.axios({
-          method: 'POST',
-          url: `v1/hits`,
-          data,
-        })
-
-        return result
-      },
       selectRow(row) {
         //   this.manager.id = row.id
       },
-      showForm() {
-        this.formVisible = true
+      setFormVisible(value = true) {
+        this.formVisible = value
       },
     },
     created() {
-      this.$eventBus.$on('createHITsSubmit', async data => {
-        const cb = async () => {
-          await this.createHITs(data)
-          await this.reloadTable
-        }
-
-        await this.$errorHandle(this, cb)
-      })
-
       this.table.columns = [
-        {
-          title: 'Id',
-          key: 'hit_id',
-          width: 270,
-          sortable: true,
-        },
         {
           title: 'Title',
           key: 'title',
@@ -103,6 +80,18 @@
           title: 'Reward',
           key: 'reward',
           width: 100,
+          sortable: true,
+        },
+        {
+          title: 'Creation time',
+          key: 'creation_time',
+          width: 200,
+          sortable: true,
+        },
+        {
+          title: 'Id',
+          key: 'hit_id',
+          width: 270,
           sortable: true,
         },
       ]
