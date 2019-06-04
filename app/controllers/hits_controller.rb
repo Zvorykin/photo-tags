@@ -3,8 +3,7 @@ class HitsController < ApplicationController
 
   # GET /hits
   def index
-    param! :amount, Integer
-    param! :next_token, String
+    validate_pagination_params
 
     result = MturkService.list_hits(params)
 
@@ -52,17 +51,19 @@ class HitsController < ApplicationController
   end
 
   def assignments
+    validate_pagination_params
     param! :hit_id, String, required: true
+    param! :assignment_statuses, String, in: %w[submitted approved rejected]
 
-    hit_id = params[:hit_id]
-    result = MturkService.hit_assignments(hit_id)
+    result = MturkService.hit_assignments(params)
 
-    p result
-
-    hash = {}
-
-    render json: hash.to_json
+    respond_with ListHitAssignmentsResponseSerializer.render(result)
   end
 
   private
+
+  def validate_pagination_params
+    param! :max_results, Integer
+    param! :next_token, String
+  end
 end

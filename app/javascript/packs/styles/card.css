@@ -33,6 +33,6 @@
 .refresh-card-button {
   border: 0;
   top: -5px;
-  width: auto !important;
-  height: auto !important;
+  /*width: auto !important;*/
+  /*height: auto !important;*/
 }

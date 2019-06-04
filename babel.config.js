@@ -36,6 +36,15 @@ module.exports = function(api) {
       ]
     ].filter(Boolean),
     plugins: [
+      [
+        "transform-imports",
+        {
+          "quasar": {
+            "transform": "quasar/dist/babel-transforms/imports.js",
+            "preventFullImport": true
+          }
+        }
+      ],
       require('babel-plugin-macros'),
       require('@babel/plugin-syntax-dynamic-import').default,
       isTestEnv && require('babel-plugin-dynamic-import-node'),

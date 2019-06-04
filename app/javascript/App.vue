@@ -1,6 +1,10 @@
 <template lang="pug">
   #app
     HitsGrid
+    //Layout(style="height: 100vh; margin:'20px'")
+      Sider(collapsible)
+      Content
+        HitsGrid
 </template>
 
 <script>
@@ -12,10 +16,6 @@
       return {}
     },
     async created() {
-      this.$Loading.config({
-        height: 5,
-      })
-
       this.axios.defaults.baseURL = `${ location.origin }/api`
       this.axios.defaults.headers.common['Content-Type'] = 'application/json'
       this.axios.defaults.headers.common['Accept'] = 'application/json'
@@ -24,22 +24,14 @@
 </script>
 
 <style>
-  @import 'packs/styles/layout.css';
+  /*@import 'packs/styles/layout.css';*/
   @import 'packs/styles/card.css';
   @import 'packs/styles/form.css';
   @import 'packs/styles/table.css';
 
-  #tabs-admin .ivu-tabs-nav {
-    padding: 0 5px !important;
-  }
-
-  .ivu-tabs-tab-disabled {
-    visibility: hidden;
-  }
-
-  .ivu-tabs-bar {
-    height: 35px;
-  }
+  /*#app {*/
+  /*  height: 100vh;*/
+  /*}*/
 
   .drawer-footer {
     width: 100%;
