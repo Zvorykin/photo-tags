@@ -10,36 +10,31 @@ module MturkService
     end
 
     def list_hits(params)
-      amount = params[:amount]
-      next_token = params[:next_token]
-
       client.list_hits(
-        max_results: amount || 100,
-        next_token: next_token
+        max_results: params[:max_results] || 100,
+        next_token: params[:next_token]
       )
     end
 
     def create_hit(params)
-      title = params[:title]
-      description = params[:description]
-      reward = params[:reward].to_s
-      assignment_duration = params[:assignment_duration]
-      lifetime = params[:lifetime]
       question = QuestionService.new.question
 
       client.create_hit(
-        title: title,
-        description: description,
-        reward: reward,
-        assignment_duration_in_seconds: assignment_duration,
-        lifetime_in_seconds: lifetime,
+        title: params[:title],
+        description: params[:description],
+        reward: params[:reward].to_s,
+        assignment_duration_in_seconds: params[:assignment_duration],
+        lifetime_in_seconds: params[:lifetime],
         question: question
       )
     end
 
-    def hit_assignments(id)
+    def hit_assignments(params)
       client.list_assignments_for_hit(
-        hit_id: id
+        hit_id: params[:hit_id],
+        max_results: params[:max_results] || 100,
+        next_token: params[:next_token],
+        assignment_statuses: params[:assignment_statuses]
       )
     end
 
