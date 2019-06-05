@@ -1,28 +1,26 @@
 {
   "private": true,
   "dependencies": {
-    "@rails/webpacker": "4.0.2",
     "@quasar/extras": "^1.0.0",
+    "@rails/webpacker": "4.0.2",
     "axios": "0.18.0",
-    "bootstrap": "^4.3.1",
-    "bootstrap-vue": "^2.0.0-rc.22",
-    "iview": "3.4.2",
     "moment": "2.24.0",
+    "quasar": "^1.0.0-beta.1",
     "vue": "2.6.10",
     "vue-axios": "2.1.4",
-    "vuex": "3.1.1",
-    "quasar": "^1.0.0-beta.1"
+    "vue-router": "^3.0.6",
+    "vuex": "3.1.1"
   },
   "devDependencies": {
-    "eslint": "^5.16.0",
     "babel-plugin-transform-imports": "1.5.0",
-    "stylus": "^0.54.5",
-    "stylus-loader": "^3.0.2",
+    "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.2.2",
     "pug": "^2.0.3",
     "pug-plain-loader": "^1.0.0",
-    "webpack-dev-server": "^3.4.1",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^3.0.2",
     "vue-loader": "14.2.2",
-    "vue-template-compiler": "2.6.10"
+    "vue-template-compiler": "2.6.10",
+    "webpack-dev-server": "^3.4.1"
   }
 }

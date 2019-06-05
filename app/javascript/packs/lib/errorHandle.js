@@ -1,12 +1,9 @@
 export default async (app, cb, showLoading = true) => {
-  app.$Loading.start()
   if ((app.loading === false) && showLoading) app.loading = true
 
   let res
   try {
     res = await cb()
-
-    app.$Loading.finish()
   } catch (err) {
     console.error(err)
 
@@ -25,7 +22,7 @@ export default async (app, cb, showLoading = true) => {
     const content = `${ data } \n
        ${ err.exception || '' } ${ message || '' } ${ err.message }`.trim()
 
-    app.$Modal.error({ title, content })
+    // app.$Modal.error({ title, content })
   }
 
   if (app.loading) app.loading = false

@@ -1,34 +1,29 @@
 <template lang='pug'>
-  Form(:model='formData' label-position='top')
-    Row
-      FormItem(label='Title')
-        Input(v-model='formData.title')
-    Row
-      FormItem(label='Description')
-        Input(v-model='formData.description' type='textarea')
-    Row
-      FormItem(label='Reward')
-        InputNumber(:max='100' :min='1' :step='0.2' v-model='formData.reward' )
-    Row
-      FormItem(label='Assignment duration')
-        Input(v-model='formData.assignmentDuration')
-    Row
-      FormItem(label='Lifetime')
-        Input(v-model='formData.lifetime')
-    Row(type='flex' justify='end')
-      FormItem
-        Button(@click='submit' type='primary') Submit
+  q-card(class="q-pa-md" id='card')
+    div(class="q-gutter-y-md column")
+      q-input(v-model="formData.title" label="Title" outlined)
+      q-input(v-model="formData.description" label="Description" outlined type="textarea"
+        autogrow)
+      q-input(v-model="formData.reward" input-class="text-right" outlined
+        prefix="$" mask="#.##" fill-mask="0"
+        label="Reward" style="max-width: 100px")
+      div(class="q-gutter-x-md row")
+        q-input(v-model.number="formData.assignmentDuration" label="Assignment duration"
+          outlined type="number")
+        q-input(v-model.number="formData.lifetime" label="Lifetime"
+          outlined type="number")
+      div(class="justify-end row")
+        q-btn(color="primary" @click='submit') Create
 </template>
 
 <script>
   export default {
     data() {
       return {
-        splitValue: 0.3,
         formData: {
           title: '',
           description: '',
-          reward: 1,
+          reward: '1.00',
           assignmentDuration: 600,
           lifetime: 600,
         },
@@ -39,22 +34,22 @@
     methods: {
       async submit() {
         await this.$errorHandle(this, this.createHITs)
+        this.$emit('hitsCreated')
       },
       async createHITs() {
-        const { data: result } = await this.axios({
+        await this.axios({
           method: 'POST',
           url: `v1/hits`,
           data: this.formData,
         })
-
-        this.$emit('hitsCreated')
-
-        return result
       }
     },
   }
 </script>
 
 <style scoped>
-
+  #card {
+    height: 100%;
+    width: 500px
+  }
 </style>

@@ -1,19 +1,37 @@
-<template lang="pug">
-  #app
-    HitsGrid
-    //Layout(style="height: 100vh; margin:'20px'")
-      Sider(collapsible)
-      Content
-        HitsGrid
+<template lang='pug'>
+  q-layout(view='hHh lpR fFf')#app
+    q-drawer(v-model='left' side='left' :width='100' behavior='desktop' bordered)
+      q-tabs(v-model='tab' vertical)
+        q-tab(name='hits' label='HITs' icon='ion-grid')
+        q-tab(name='gallery' label='Gallery' icon='ion-images')
+        q-tab(name='tags' label='Tags' icon='ion-pricetags')
+        q-tab(name='login' label='Login' icon='ion-log-in')
+    q-page-container
+      q-page
+        q-tab-panels(v-model='tab' keep-alive)#tab-panels
+          q-tab-panel(name='hits')
+            HitsGrid
+          q-tab-panel(name='gallery')
+          q-tab-panel(name='tags')
+          q-tab-panel(name='login')
+            HITCreateForm
+
+        //router-view
+    //HitsGrid
 </template>
 
 <script>
   import HitsGrid from './packs/components/hits_grid'
 
+  import HITCreateForm from './packs/components/hit_create_form'
+
   export default {
-    components: { HitsGrid },
+    components: { HitsGrid, HITCreateForm },
     data() {
-      return {}
+      return {
+        tab: 'login',
+        left: true,
+      }
     },
     async created() {
       this.axios.defaults.baseURL = `${ location.origin }/api`
@@ -24,23 +42,7 @@
 </script>
 
 <style>
-  /*@import 'packs/styles/layout.css';*/
-  @import 'packs/styles/card.css';
-  @import 'packs/styles/form.css';
-  @import 'packs/styles/table.css';
-
-  /*#app {*/
-  /*  height: 100vh;*/
-  /*}*/
-
-  .drawer-footer {
-    width: 100%;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    border-top: 1px solid #e8e8e8;
-    padding: 10px 16px;
-    text-align: right;
-    background: #fff;
+  #tab-panels .q-tab-panel {
+    padding: 0 0 1px 0;
   }
 </style>

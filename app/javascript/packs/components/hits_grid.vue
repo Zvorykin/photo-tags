@@ -1,23 +1,14 @@
 <template lang='pug'>
   div
-    q-btn(round color="secondary" icon="ion-add-circle")
-    q-table(dense :data="table.items" :columns="table.fields")
-    //b-table(hover :items="table.items" :fields="table.fields")
-
-  //Card(:dis-hover='true' id='card')
-    p(slot='title') HITs
-    Button(slot='extra' size='default' icon='md-refresh-circle' @click='refresh'
-      type='text' shape='circle' class='refresh-card-button')
-    Form(inline)
-      FormItem(:labelWidth='0')
-        Button(type='primary' size='small' icon='md-add' shape='circle'
+    q-table(title='HITs' dense flat :data="table.data" :columns="table.columns"
+      :pagination.sync="table.pagination" :loading="loading" class="sticky-table"
+      separator="vertical")
+      template(v-slot:top="")
+        q-btn(flat dense round color="primary" icon="ion-add-circle"
           @click='setFormVisible(true)')
-      FormItem(:labelWidth='0')
-        Button(type='success', size='small' icon='md-create' shape='circle'
-          @click='setFormVisible(true)')
-    Table(border :columns='table.columns' :data='table.data' @on-row-click='selectRow'
-      highlight-row :loading='loading')#table
-    Drawer(title='Create HIT' v-model='formVisible' placement='left' width='500')
+        q-space
+        q-btn(dense flat round icon="ion-refresh" @click="refresh")
+    q-dialog(v-model="formVisible" position="left")
       HITCreateForm(v-on:hitsCreated='refresh')
 </template>
 
@@ -29,8 +20,14 @@
     data() {
       return {
         table: {
-          items: [],
-          fields: [],
+          pagination: {
+            sortBy: 'creation_time',
+            descending: true,
+            page: 1,
+            rowsPerPage: 0
+          },
+          data: [],
+          columns: [],
         },
         loading: false,
         formVisible: false,
@@ -40,11 +37,10 @@
     watch: {},
     methods: {
       async refresh() {
-        this.table.items = []
+        this.table.data = []
 
         this.setFormVisible(false)
-        await this.reloadTable()
-        // await this.$errorHandle(this, this.reloadTable)
+        await this.$errorHandle(this, this.reloadTable)
       },
       async reloadTable() {
         const { data: result } = await this.axios({
@@ -54,7 +50,7 @@
 
         const { hits, next_token, max_amount } = result
 
-        this.table.items = hits
+        this.table.data = hits
       },
       selectRow(row) {
         //   this.manager.id = row.id
@@ -64,35 +60,38 @@
       },
     },
     created() {
-      this.table.fields = [
+      this.table.columns = [
         {
           label: 'Title',
           name: 'title',
           field: 'title',
           sortable: true,
+          align: 'left',
         },
-        // {
-        //   label: 'Status',
-        //   key: 'hit_status',
-        //   width: 100,
-        //   sortable: true,
-        // },
-        // {
-        //   key: 'reward',
-        //   width: 100,
-        //   sortable: true,
-        // },
-        // {
-        //   key: 'creation_time',
-        //   width: 200,
-        //   sortable: true,
-        // },
-        // {
-        //   title: 'Id',
-        //   key: 'hit_id',
-        //   width: 270,
-        //   sortable: true,
-        // },
+        {
+          label: 'Status',
+          name: 'hit_status',
+          field: 'hit_status',
+          sortable: true,
+        },
+        {
+          label: 'Reward',
+          name: 'reward',
+          field: 'reward',
+          sortable: true,
+        },
+        {
+          label: 'Creation time',
+          name: 'creation_time',
+          field: 'creation_time',
+          sortable: true,
+        },
+        {
+          label: 'Id',
+          name: 'hit_id',
+          field: 'hit_id',
+          sortable: true,
+        },
       ]
 
       this.refresh()
@@ -100,5 +99,19 @@
   }
 </script>
 
-<style scoped>
+<style lang="stylus">
+  .sticky-table
+    .q-table__middle
+      max-height calc(100% - 107px)
+
+    .q-table__top,
+    .q-table__bottom,
+    thead tr:first-child th
+      background-color #f6f6f6
+
+    thead tr:first-child th
+      position sticky
+      top 0
+      opacity 1
+      z-index 1
 </style>
