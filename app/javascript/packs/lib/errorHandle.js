@@ -7,7 +7,7 @@ export default async (app, cb, showLoading = true) => {
   } catch (err) {
     console.error(err)
 
-    app.$Loading.error()
+    // app.$Loading.error()
 
     const {
       statusText: error,

@@ -12,24 +12,23 @@
           q-tab-panel(name='hits')
             HitsGrid
           q-tab-panel(name='gallery')
+            Gallery
           q-tab-panel(name='tags')
           q-tab-panel(name='login')
-            HITCreateForm
 
         //router-view
-    //HitsGrid
 </template>
 
 <script>
   import HitsGrid from './packs/components/hits_grid'
 
-  import HITCreateForm from './packs/components/hit_create_form'
+  import Gallery from './packs/components/gallery'
 
   export default {
-    components: { HitsGrid, HITCreateForm },
+    components: { HitsGrid, Gallery },
     data() {
       return {
-        tab: 'login',
+        tab: 'gallery',
         left: true,
       }
     },

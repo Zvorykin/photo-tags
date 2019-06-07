@@ -1,10 +1,14 @@
+# frozen_string_literal: true
+
 class Photo
   include Mongoid::Document
+  store_in client: 'moose'
 
-  field :name, type: String
-  field :url, type: String
+  field :filename, type: String
+  field :original_uri, type: String
 
-  validates :name, presence: true, uniqueness: true
+  validates :filename, presence: true, uniqueness: true
+  validates :original_uri, presence: true, uniqueness: true
 
   embeds_many :tags
 end

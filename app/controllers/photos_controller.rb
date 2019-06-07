@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 class PhotosController < ApplicationController
   before_action :set_photo, only: [:show, :update, :destroy]
 
   # GET /photos
   def index
-    @photos = Photo.all
+    search_params = params.except(:action, :controller)
 
-    render json: @photos
+    respond_with PhotosRemoteService.search(search_params)
   end
 
   # GET /photos/1
@@ -15,13 +17,14 @@ class PhotosController < ApplicationController
 
   # POST /photos
   def create
-    @photo = Photo.new(photo_params)
+    param! :name, String, required: true
 
-    if @photo.save
-      render json: @photo, status: :created, location: @photo
-    else
-      render json: @photo.errors, status: :unprocessable_entity
-    end
+    name = params[:name]
+
+    photo = Photo.new(name: name)
+
+    photo.save
+    respond_with ImageSerializer.render(photo), status: :created, location: photo
   end
 
   # PATCH/PUT /photos/1
@@ -46,6 +49,6 @@ class PhotosController < ApplicationController
 
     # Only allow a trusted parameter "white list" through.
     def photo_params
-      params.require(:photo)
+      params.require(:name)
     end
 end

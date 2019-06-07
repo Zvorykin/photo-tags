@@ -1,14 +1,15 @@
 {
   "private": true,
   "dependencies": {
-    "@quasar/extras": "^1.0.0",
+    "@quasar/extras": "1.1.2",
     "@rails/webpacker": "4.0.2",
     "axios": "0.18.0",
+    "debounce": "1.2.0",
     "moment": "2.24.0",
-    "quasar": "^1.0.0-beta.1",
+    "quasar": "1.0.0-rc.4",
     "vue": "2.6.10",
     "vue-axios": "2.1.4",
-    "vue-router": "^3.0.6",
+    "vue-router": "3.0.6",
     "vuex": "3.1.1"
   },
   "devDependencies": {
