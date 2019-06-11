@@ -5,9 +5,9 @@ class HitsController < ApplicationController
   def index
     validate_pagination_params
 
-    result = MturkService.list_hits(params)
+    result = HitsService.search(params).to_a
 
-    respond_with ListHitsResponseSerializer.render(result)
+    respond_with HitSerializer.render(result, root: :hits)
   end
 
   # GET /hits/1
@@ -22,18 +22,12 @@ class HitsController < ApplicationController
     param! :reward, Float, required: true
     param! :assignment_duration, Integer, required: true
     param! :lifetime, Integer, required: true
+    param! :max_assignments, Integer, required: true
 
-    result = MturkService.create_hit(params)
+    result = HitsService.create(params)
 
-    # p result
-
-    hash = {
-      name: '123123'
-    }
-
-    render json: hash.to_json
-
-    # respond_with hash.to_json
+    respond_with result
+    # respond_with HitSerializer.render(result.to_a)
   end
 
   # PATCH/PUT /hits/1
@@ -63,7 +57,7 @@ class HitsController < ApplicationController
   private
 
   def validate_pagination_params
-    param! :max_results, Integer
-    param! :next_token, String
+    param! :per_page, Integer
+    param! :page, String
   end
 end

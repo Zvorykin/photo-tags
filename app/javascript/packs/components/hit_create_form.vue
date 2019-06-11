@@ -4,16 +4,18 @@
       q-input(v-model="formData.title" label="Title" outlined)
       q-input(v-model="formData.description" label="Description" outlined type="textarea"
         autogrow)
-      q-input(v-model="formData.reward" input-class="text-right" outlined
-        prefix="$" mask="#.##" fill-mask="0"
-        label="Reward" style="max-width: 100px")
+      div(class="q-gutter-x-md row")
+        q-input(v-model="formData.reward" input-class="text-right" outlined
+          prefix="$" mask="#.##" fill-mask="0" label="Reward").col
+        q-input(v-model.number="formData.maxAssignments" outlined
+          label="Max assignments" type="number").col
       div(class="q-gutter-x-md row")
         q-input(v-model.number="formData.assignmentDuration" label="Assignment duration"
-          outlined type="number")
+          outlined type="number").col
         q-input(v-model.number="formData.lifetime" label="Lifetime"
-          outlined type="number")
+          outlined type="number").col
       div(class="justify-end row")
-        q-btn(color="primary" @click='submit') Create
+        q-btn(color="primary" @click='submit') Создать
 </template>
 
 <script>
@@ -26,6 +28,7 @@
           reward: '1.00',
           assignmentDuration: 600,
           lifetime: 600,
+          maxAssignments: 1,
         },
       }
     },

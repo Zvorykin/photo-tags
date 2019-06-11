@@ -4,7 +4,7 @@
       :pagination.sync="table.pagination" :loading="loading" class="sticky-table"
       separator="vertical")
       template(v-slot:top="")
-        q-btn(flat dense round color="primary" icon="ion-add-circle"
+        q-btn(dense color="primary" icon="ion-add-circle" label="Создать"
           @click='setFormVisible(true)')
         q-space
         q-btn(dense flat round icon="ion-refresh" @click="refresh")
@@ -21,7 +21,7 @@
       return {
         table: {
           pagination: {
-            sortBy: 'creation_time',
+            sortBy: 'created_at',
             descending: true,
             page: 1,
             rowsPerPage: 0
@@ -48,9 +48,7 @@
           url: `v1/hits`,
         })
 
-        const { hits, next_token, max_amount } = result
-
-        this.table.data = hits
+        this.table.data = result.hits
       },
       selectRow(row) {
         //   this.manager.id = row.id
@@ -62,34 +60,40 @@
     created() {
       this.table.columns = [
         {
-          label: 'Title',
+          label: 'Заголовок',
           name: 'title',
           field: 'title',
           sortable: true,
           align: 'left',
         },
         {
-          label: 'Status',
-          name: 'hit_status',
-          field: 'hit_status',
+          label: 'Статус',
+          name: 'status',
+          field: 'status',
           sortable: true,
         },
         {
-          label: 'Reward',
+          label: 'Вознаграждение',
           name: 'reward',
           field: 'reward',
           sortable: true,
         },
         {
-          label: 'Creation time',
-          name: 'creation_time',
-          field: 'creation_time',
+          label: 'Время создания',
+          name: 'created_at',
+          field: 'created_at',
           sortable: true,
         },
         {
-          label: 'Id',
-          name: 'hit_id',
-          field: 'hit_id',
+          label: 'Размещение истекает',
+          name: 'expiration_at',
+          field: 'expiration_at',
+          sortable: true,
+        },
+        {
+          label: 'MTurk id',
+          name: 'mturk_id',
+          field: 'mturk_id',
           sortable: true,
         },
       ]
@@ -102,7 +106,7 @@
 <style lang="stylus">
   .sticky-table
     .q-table__middle
-      max-height calc(100% - 107px)
+      height calc(100% - 107px)
 
     .q-table__top,
     .q-table__bottom,

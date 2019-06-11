@@ -25,8 +25,9 @@ module MturkService
         reward: params[:reward].to_s,
         assignment_duration_in_seconds: params[:assignment_duration],
         lifetime_in_seconds: params[:lifetime],
+        max_assignments: params[:max_assignments],
         question: question
-      )
+      ).hit
     end
 
     def hit_assignments(params)

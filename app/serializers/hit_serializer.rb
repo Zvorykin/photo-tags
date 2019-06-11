@@ -1,19 +1,21 @@
 # frozen_string_literal: true
 
 class HitSerializer < Blueprinter::Base
-  fields :hit_id,
+  identifier(:id) { |hit| hit.id.to_s }
+
+  fields :mturk_id,
          :title,
          :description,
-         :creation_time,
-         :question,
-         :hit_status,
+         :created_at,
+         :expiration_at,
+         :status,
          :max_assignments,
          :reward,
-         :auto_approval_delay_in_seconds,
-         :expiration,
-         :assignment_duration_in_seconds,
-         :hit_review_status,
-         :number_of_assignments_pending,
-         :number_of_assignments_available,
-         :number_of_assignments_completed
+         # :auto_approval_delay_in_seconds,
+         # :assignment_duration_in_seconds,
+         :assignment_duration
+    # :hit_review_status,
+    # :number_of_assignments_pending,
+    # :number_of_assignments_available,
+    # :number_of_assignments_completed
 end
