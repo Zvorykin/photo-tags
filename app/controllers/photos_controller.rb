@@ -1,30 +1,22 @@
 # frozen_string_literal: true
 
 class PhotosController < ApplicationController
-  before_action :set_photo, only: [:show, :update, :destroy]
-
   # GET /photos
   def index
-    search_params = params.except(:action, :controller)
+    photos_response = PhotosRemoteService.search(photo_params)
+    submitted_photos = AssignmentService.submitted_photos
 
-    respond_with PhotosRemoteService.search(search_params)
+    result = {
+      photos: submitted_photos.concat(photos_response[:photos]),
+      total: photos_response[:total]
+    }
+
+    respond_with result
   end
 
   # GET /photos/1
   def show
-    render json: @photo
-  end
-
-  # POST /photos
-  def create
-    param! :name, String, required: true
-
-    name = params[:name]
-
-    photo = Photo.new(name: name)
-
-    photo.save
-    respond_with ImageSerializer.render(photo), status: :created, location: photo
+    respond_with PhotosRemoteService.by_ids(params[:id])
   end
 
   # PATCH/PUT /photos/1
@@ -36,19 +28,9 @@ class PhotosController < ApplicationController
     end
   end
 
-  # DELETE /photos/1
-  def destroy
-    @photo.destroy
-  end
-
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_photo
-      @photo = Photo.find(params[:id])
-    end
 
-    # Only allow a trusted parameter "white list" through.
-    def photo_params
-      params.require(:name)
-    end
+  def photo_params
+    params.except(:action, :controller)
+  end
 end

@@ -51,7 +51,11 @@ import {
   QIcon,
   QHeader,
   QFooter,
-  QPagination
+  QPagination,
+  QBadge,
+  QInnerLoading,
+  QSpinnerTail,
+  QSelect
 } from 'quasar'
 
 Vue.use(Quasar, {
@@ -80,7 +84,11 @@ Vue.use(Quasar, {
     QIcon,
     QHeader,
     QFooter,
-    QPagination
+    QPagination,
+    QBadge,
+    QInnerLoading,
+    QSpinnerTail,
+    QSelect
   },
   directives: {
     ClosePopup

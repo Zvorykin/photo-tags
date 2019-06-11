@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class AssignmentSerializer < Blueprinter::Base
+class MturkAssignmentSerializer < Blueprinter::Base
   fields :hit_id,
          :assignment_id,
          :assignment_status,

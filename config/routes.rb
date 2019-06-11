@@ -15,9 +15,11 @@ Rails.application.routes.draw do
       resources :hits
 
       get 'hits/:hit_id/assignments', to: 'hits#assignments'
+      put 'hits/:hit_id/assignments', to: 'hits#update_assignments'
 
       resources :tags
       resources :photos
+      resources :assignments
 
       get 'balance', controller: 'accounts'
     end

@@ -30,8 +30,10 @@ class Hit
   field :expiration_at, type: DateTime
   validates :created_at, presence: true
 
-  field :mturk_id, type: String
-  validates :mturk_id, presence: true
+  field :hit_id, type: String
+  validates :hit_id, presence: true, uniqueness: true
 
   field :payload, type: Hash
+
+  has_many :assignment
 end

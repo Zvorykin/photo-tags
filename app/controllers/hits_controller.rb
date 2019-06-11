@@ -49,9 +49,20 @@ class HitsController < ApplicationController
     param! :hit_id, String, required: true
     param! :assignment_statuses, String, in: %w[submitted approved rejected]
 
-    result = MturkService.hit_assignments(params)
+    result = MturkService.hit_submitted_assignments(params)
 
-    respond_with ListHitAssignmentsResponseSerializer.render(result)
+    respond_with ListHitAssignmentsResponseSerializer.render(result),
+                 location: hits_url
+  end
+
+  def update_assignments
+    param! :hit_id, String, required: true
+
+    result = MturkService.update_hit_submitted_assignments(params)
+
+    hash = {}
+
+    render json: hash
   end
 
   private

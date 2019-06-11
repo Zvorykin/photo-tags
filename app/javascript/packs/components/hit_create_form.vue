@@ -28,7 +28,7 @@
           reward: '1.00',
           assignmentDuration: 600,
           lifetime: 600,
-          maxAssignments: 1,
+          maxAssignments: 10,
         },
       }
     },
