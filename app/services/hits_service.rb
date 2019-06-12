@@ -16,7 +16,7 @@ module HitsService
         assignment_duration: params[:assignment_duration],
         lifetime: params[:lifetime],
         max_assignments: params[:max_assignments],
-        mturk_id: mturk_hit[:hit_id],
+        hit_id: mturk_hit[:hit_id],
         status: mturk_hit[:hit_status],
         expiration_at: mturk_hit[:expiration],
         payload: mturk_hit.to_h

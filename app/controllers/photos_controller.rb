@@ -3,8 +3,10 @@
 class PhotosController < ApplicationController
   # GET /photos
   def index
+    param! :show_assignments, :boolean
+
+    submitted_photos = params[:show_assignments] ? AssignmentService.submitted_photos : []
     photos_response = PhotosRemoteService.search(photo_params)
-    submitted_photos = AssignmentService.submitted_photos
 
     result = {
       photos: submitted_photos.concat(photos_response[:photos]),
@@ -31,6 +33,6 @@ class PhotosController < ApplicationController
   private
 
   def photo_params
-    params.except(:action, :controller)
+    params.except(:action, :controller, :format)
   end
 end

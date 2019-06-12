@@ -3,7 +3,7 @@
 class HitSerializer < Blueprinter::Base
   identifier(:id) { |hit| hit.id.to_s }
 
-  fields :mturk_id,
+  fields :hit_id,
          :title,
          :description,
          :created_at,

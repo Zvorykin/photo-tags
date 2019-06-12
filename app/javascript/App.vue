@@ -1,11 +1,11 @@
 <template lang='pug'>
   q-layout(view='hHh lpR fFf')#app
-    q-drawer(v-model='left' side='left' :width='100' behavior='desktop' bordered)
+    q-drawer(v-model='showDrawer' side='left' :width='100' behavior='desktop' bordered)
       q-tabs(v-model='tab' vertical)
-        q-tab(name='hits' label='HITs' icon='ion-grid')
-        q-tab(name='gallery' label='Gallery' icon='ion-images')
-        q-tab(name='tags' label='Tags' icon='ion-pricetags')
-        q-tab(name='login' label='Login' icon='ion-log-in')
+        q-tab(name='hits' label='Задания' icon='ion-grid')
+        q-tab(name='gallery' label='Галерея' icon='ion-images')
+        q-tab(name='tags' label='Теги' icon='ion-pricetags')
+        q-tab(name='login' label='Логин' icon='ion-log-in')
     q-page-container
       q-page
         q-tab-panels(v-model='tab' keep-alive)#tab-panels
@@ -29,7 +29,7 @@
     data() {
       return {
         tab: 'gallery',
-        left: true,
+        showDrawer: true,
       }
     },
     async created() {

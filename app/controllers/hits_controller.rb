@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class HitsController < ApplicationController
   # before_action :set_hit, only: %i[show update destroy]
 
@@ -27,7 +29,6 @@ class HitsController < ApplicationController
     result = HitsService.create(params)
 
     respond_with result
-    # respond_with HitSerializer.render(result.to_a)
   end
 
   # PATCH/PUT /hits/1

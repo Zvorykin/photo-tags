@@ -73,6 +73,12 @@
           sortable: true,
         },
         {
+          label: 'Макс. выполнений',
+          name: 'max_assignments',
+          field: 'max_assignments',
+          sortable: true,
+        },
+        {
           label: 'Вознаграждение',
           name: 'reward',
           field: 'reward',
@@ -83,17 +89,19 @@
           name: 'created_at',
           field: 'created_at',
           sortable: true,
+          format: (val) => this.$moment(val).format()
         },
         {
           label: 'Размещение истекает',
           name: 'expiration_at',
           field: 'expiration_at',
           sortable: true,
+          format: (val) => this.$moment(val).format()
         },
         {
-          label: 'MTurk id',
-          name: 'mturk_id',
-          field: 'mturk_id',
+          label: 'Hit id',
+          name: 'hit_id',
+          field: 'hit_id',
           sortable: true,
         },
       ]
