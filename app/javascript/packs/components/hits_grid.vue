@@ -1,15 +1,15 @@
 <template lang='pug'>
   div
-    q-table(title='HITs' dense flat :data="table.data" :columns="table.columns"
-      :pagination.sync="table.pagination" :loading="loading" class="sticky-table"
-      separator="vertical")
-      template(v-slot:top="")
-        q-btn(dense color="primary" icon="ion-add-circle" label="Создать"
+    q-table(title='HITs' dense flat :data='table.data' :columns='table.columns'
+      :pagination.sync='table.pagination' :loading='loading' class='sticky-table'
+      separator='vertical')
+      template(v-slot:top='')
+        q-btn(dense color='primary' icon='ion-add-circle' label='Создать'
           @click='setFormVisible(true)')
         q-space
-        q-btn(dense flat round icon="ion-refresh" @click="refresh")
-    q-dialog(v-model="formVisible" position="left")
-      HITCreateForm(v-on:hitsCreated='refresh')
+        q-btn(dense flat round icon='ion-refresh' @click='refresh')
+    q-dialog(v-model='formVisible' position='left')
+      HITCreateForm(@hitsCreated='refresh')
 </template>
 
 <script>
@@ -79,7 +79,7 @@
           sortable: true,
         },
         {
-          label: 'Вознаграждение',
+          label: 'Вознаграждение, $',
           name: 'reward',
           field: 'reward',
           sortable: true,
@@ -111,7 +111,7 @@
   }
 </script>
 
-<style lang="stylus">
+<style lang='stylus'>
   .sticky-table
     .q-table__middle
       height calc(100% - 107px)

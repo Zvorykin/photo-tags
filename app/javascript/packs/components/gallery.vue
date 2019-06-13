@@ -10,29 +10,34 @@
     q-page-container
       q-page.q-gutter-x-md.q-gutter-y-md#cards-container
         q-inner-loading(:showing="loading")
-          q-spinner-tail(size="8em" color="primary")
-        q-card(v-for="image in images" v-bind:key="image.id" class="image-card")
-          q-img(:src="image.thumb1xUrl" :ratio="1")
-            div(class="absolute-top-right bg-red rounded-borders" v-if="image.assignment"
-              @click="setFormVisible(true)")
+          q-spinner-tail(size="6em" color="primary")
+        q-card(v-for="image in images" class="image-card"
+          :key="image.id + (image.assignment && image.assignment.assignment_id)")
+          q-img(:src="image.thumb1xUrl" :ratio="1" @click="processAssignment(image)")
+            div(class="absolute-top-right bg-red rounded-borders" v-if="image.assignment")
               q-icon(name="ion-alert" size="1.2rem")
     q-footer(bordered)#footer
       q-toolbar.q-gutter-x-md
         q-pagination(v-model="searchParams.page" :max-pages="10" :max="99"
           :boundary-numbers="false")
         q-select(dense v-model="searchParams.perPage" :options="perPageOptions" outlined
-          filled bg-color="primary" dark options-dense)
+        bg-color="primary" dark options-dense)
         q-space
-        p.black-text Всего: {{total}}
+        q-field(borderless dense)
+          div.self-center Всего по заданному запросу: {{total}}
     q-dialog(v-model="formVisible" position="right")
+      AssignmentForm(v-bind="imageProps" v-if='formVisible' @assignmentSubmitted="onAssignmentSubmitted")
 </template>
 
 <script>
+  import AssignmentForm from './assignment_form'
+
   export default {
-    components: {},
+    components: { AssignmentForm },
     data() {
       return {
         images: [],
+        imageProps: {},
         searchParams: {
           query: 'cats',
           page: 1,
@@ -70,10 +75,32 @@
         this.images = result.photos
         this.total = result.total
       },
+      async processAssignment(image) {
+        if (image.assignment) {
+          this.imageProps = {
+            src: image.preview1xUrl,
+            imageId: image.id,
+            imageTags: image.tags.map(tag => tag.title),
+            assignmentId: image.assignment.assignment_id,
+            assignmentTags: image.assignment.tags,
+          }
+          this.setFormVisible(true)
+        }
+      },
       async setFormVisible(value = false) {
-        console.log(value)
+        this.formVisible = value
+      },
+      onAssignmentSubmitted() {
+        this.setFormVisible(false)
 
-      }
+        this.images = this.images.filter(image => {
+          if (image.assignment && image.assignment.assignment_id) {
+            return !(image.assignment.assignment_id === this.imageProps.assignmentId
+              && image.id === this.imageProps.imageId)
+          }
+          return true
+        })
+      },
     },
     async created() {
       this.debouncedSearch = this.$debounce(this.search, 500)

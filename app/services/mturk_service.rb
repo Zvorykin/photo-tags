@@ -5,7 +5,7 @@ module MturkService
   TEST_REGION = 'us-east-1'
 
   SUBMITTED_STATUS = 'Submitted'
-  RESULT_REGEX = /<FreeText>({.*})<\/FreeText>/.freeze
+  RESULT_REGEX = /<FreeText>(\[{.*}\])<\/FreeText>/.freeze
 
   class << self
     def balance
@@ -38,9 +38,9 @@ module MturkService
       assignments = hit_submitted_assignments(hit_id: hit_id).assignments
 
       assignments.each do |item|
-        result = item[:answer].match(RESULT_REGEX)&.captures&.first
+        answer = item[:answer].match(RESULT_REGEX)&.captures&.first
 
-        unless result.present?
+        unless answer.present?
           Rails.logger.warn("Result not found! #{item}")
           next
         end
@@ -55,8 +55,8 @@ module MturkService
           hit_id: hit_id,
           status: item[:assignment_status],
           submit_time: item[:submit_time],
-          result: JSON.parse(result, symbolize_names: true),
-          payload: item
+          answers: JSON.parse(answer, symbolize_names: true),
+          payload: item.to_h
         )
         assignment.save
       end

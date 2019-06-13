@@ -15,17 +15,18 @@
             Gallery
           q-tab-panel(name='tags')
           q-tab-panel(name='login')
+            temp
 
         //router-view
 </template>
 
 <script>
   import HitsGrid from './packs/components/hits_grid'
-
   import Gallery from './packs/components/gallery'
+  import temp from './packs/components/gallery'
 
   export default {
-    components: { HitsGrid, Gallery },
+    components: { HitsGrid, Gallery, temp },
     data() {
       return {
         tab: 'gallery',

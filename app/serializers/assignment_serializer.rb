@@ -5,5 +5,6 @@ class AssignmentSerializer < Blueprinter::Base
          :assignment_id,
          :status,
          :submit_time,
-         :result
+         :answers,
+         :results
 end

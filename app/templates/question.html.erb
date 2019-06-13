@@ -55,7 +55,7 @@
         }
 
         function validateResult() {
-          var result = {}
+          var result = []
           for (var id in imagesInputNames) {
             if (imagesInputNames.hasOwnProperty(id)) {
               var resultTags = []
@@ -82,7 +82,10 @@
                 return
               }
 
-              result[id] = resultTags
+              result.push({
+                photo_id: id,
+                tags: resultTags
+              })
             }
           }
 

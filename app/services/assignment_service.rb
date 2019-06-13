@@ -7,11 +7,12 @@ module AssignmentService
       submitted_assignments = search(status: 'submitted')
 
       submitted_assignments.each do |assignment|
-        assignment[:result].each do |key, value|
-          photo = PhotosRemoteService.by_ids(key).first
-          photo[:assignment] = AssignmentSerializer.render_as_hash(assignment)
-                                                   .merge(tags: value)
-                                                   .except(:result)
+        assignment[:answers].each do |item|
+          photo = PhotosRemoteService.by_ids(item[:photo_id]).first
+          photo[:assignment] = AssignmentSerializer
+                               .render_as_hash(assignment)
+                               .merge(tags: item[:tags])
+                               .except(:answers)
           result << photo
         end
       end
@@ -28,6 +29,17 @@ module AssignmentService
       assignments
     end
 
-    private
+    def upsert_result(params)
+      assignment = Assignment.find_by(assignment_id: params[:assignment_id])
+
+      assignment.results
+                .delete_if { |result| result[:image_id] == params[:image_id] }
+                .append(
+                  image_id: params[:image_id],
+                  tags: params[:tags]
+                )
+
+      assignment.save
+    end
   end
 end
