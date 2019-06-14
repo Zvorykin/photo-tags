@@ -30,7 +30,7 @@ module PhotosRemoteService
     end
 
     def find_by_id(id)
-      client.get(id).body.slice(*FIELDS)
+      client.get(id).body.slice(*FIELDS).symbolize_keys
     end
 
     def add_fields_param(params)

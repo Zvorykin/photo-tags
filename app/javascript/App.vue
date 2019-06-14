@@ -13,11 +13,11 @@
           q-tab-panel(name='hits')
             HitsGrid
           q-tab-panel(name='assignments')
+            Assignments
           q-tab-panel(name='gallery')
             Gallery
           q-tab-panel(name='tags')
           q-tab-panel(name='login')
-            temp
 
         //router-view
 </template>
@@ -25,13 +25,13 @@
 <script>
   import HitsGrid from './packs/components/hits_grid'
   import Gallery from './packs/components/gallery'
-  import temp from './packs/components/gallery'
+  import Assignments from './packs/components/assignments'
 
   export default {
-    components: { HitsGrid, Gallery, temp },
+    components: { HitsGrid, Gallery, Assignments },
     data() {
       return {
-        tab: 'gallery',
+        tab: 'assignments',
         showDrawer: true,
       }
     },
@@ -46,5 +46,18 @@
 <style>
   #tab-panels .q-tab-panel {
     padding: 0 0 1px 0;
+  }
+
+  .footer, .header {
+    background: white;
+  }
+
+  .cards-container {
+    margin: 0;
+    padding-bottom: 15px;
+  }
+
+  .black-text {
+    color: rgba(0, 0, 0, 0.87);
   }
 </style>

@@ -2,20 +2,17 @@
   q-layout(view="lHh lpr lFf" container)
     q-header(bordered).header
       q-toolbar
-        q-input(outlined dense clearable v-model.lazy="searchParams.query").col
-          template(v-slot:append='')
-            q-btn(dense flat round icon="ion-search" @click="search")
+        q-btn(round color='primary' icon="ion-refresh" @click="debouncedRefresh")
     q-page-container
       q-page.q-gutter-x-md.q-gutter-y-md.row.cards-container
         q-inner-loading(:showing="loading")
           q-spinner-tail(size="6em" color="primary")
-        PhotoCard(v-for="photo in photos" :key="photo.id" v-bind="formatPhotoProps(photo)")
+        PhotoCard(v-for="photo in photos" :key="photo.id + photo.assignment_id"
+          v-bind="formatPhotoProps(photo)" @assignmentSubmitted="onAssignmentSubmitted")
     q-footer(bordered).footer
       q-toolbar.q-gutter-x-md
-        q-pagination(v-model="searchParams.page" :max-pages="10" :max="99"
-          :boundary-numbers="false")
-        q-select(dense v-model="searchParams.perPage" :options="perPageOptions" outlined
-          bg-color="primary" dark options-dense)
+        q-select(dense v-model="refreshParams.perPage" :options="perPageOptions" outlined
+        bg-color="primary" dark options-dense)
         q-space
         q-field(borderless dense)
           div.self-center Всего: {{total}}
@@ -29,9 +26,7 @@
     data() {
       return {
         photos: [],
-        searchParams: {
-          query: 'sunset',
-          page: 1,
+        refreshParams: {
           perPage: 10,
         },
         perPageOptions: [5, 10, 15, 20, 25, 50],
@@ -41,24 +36,24 @@
     },
     computed: {},
     watch: {
-      searchParams: {
+      refreshParams: {
         handler() {
-          this.debouncedSearch()
+          this.debouncedRefresh()
         },
         deep: true,
       },
     },
     methods: {
-      async search() {
+      async refresh() {
         this.photos = []
 
-        await this.$errorHandle(this, this.searchRequest)
+        await this.$errorHandle(this, this.refreshRequest)
       },
-      async searchRequest() {
+      async refreshRequest() {
         const { data: result } = await this.axios({
           method: 'GET',
-          url: `v1/photos`,
-          params: this.searchParams,
+          url: `v1/assignments_to_review`,
+          params: this.refreshParams,
         })
 
         this.photos = result.photos
@@ -71,13 +66,20 @@
           id: photo.id,
           filename: photo.filename,
           title: photo.title,
-          tags:  photo.tags.map(tag => tag.title)
+          tags: photo.tags.map(tag => tag.title),
+          assignmentId: photo.assignment_id,
+          assignmentTags: photo.assignment_tags,
         }
+      },
+      onAssignmentSubmitted({ id, assignmentId }) {
+        this.photos = this.photos.filter(photo => {
+          return !(photo.assignment_id === assignmentId && photo.id === id)
+        })
       },
     },
     async created() {
-      this.debouncedSearch = this.$debounce(this.search, 500)
-      this.search()
+      this.debouncedRefresh = this.$debounce(this.refresh, 1000)
+      this.refresh()
     },
   }
 </script>
@@ -85,3 +87,4 @@
 <style scoped>
 
 </style>
+

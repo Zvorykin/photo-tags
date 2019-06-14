@@ -3,21 +3,24 @@
 module AssignmentService
   class << self
     def submitted_photos
-      result = []
+      photos = []
       submitted_assignments = search(status: 'submitted')
 
       submitted_assignments.each do |assignment|
         assignment[:answers].each do |item|
+          next if assignment[:results].any? do |result|
+            result[:photo_id] == item[:photo_id]
+          end
+
           photo = PhotosRemoteService.by_ids(item[:photo_id]).first
-          photo[:assignment] = AssignmentSerializer
-                               .render_as_hash(assignment)
-                               .merge(tags: item[:tags])
-                               .except(:answers)
-          result << photo
+          photo[:assignment_id] = assignment[:assignment_id]
+          photo[:assignment_tags] = item[:tags].sort
+
+          photos << photo
         end
       end
 
-      result
+      photos
     end
 
     def search(params = {})
@@ -33,9 +36,9 @@ module AssignmentService
       assignment = Assignment.find_by(assignment_id: params[:assignment_id])
 
       assignment.results
-                .delete_if { |result| result[:image_id] == params[:image_id] }
+                .delete_if { |result| result[:photo_id] == params[:photo_id] }
                 .append(
-                  image_id: params[:image_id],
+                  photo_id: params[:photo_id],
                   tags: params[:tags]
                 )
 

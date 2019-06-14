@@ -27,6 +27,6 @@ class Assignment
       .filter { |result| result[:applied] }
       .each_with_object([]) { |result, tag_list| tag_list.concat(result[:tags]) }
       .uniq
-      .each { |tag| ImageTag.new(name: tag).upsert }
+      .each { |tag| PhotoTag.new(name: tag).upsert }
   end
 end
