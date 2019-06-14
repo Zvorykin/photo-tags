@@ -39,6 +39,7 @@ import {
   QChip,
   QSplitter,
   QSeparator,
+  QTooltip
 } from 'quasar'
 
 Notify.setDefaults({
@@ -89,6 +90,7 @@ export default {
     QChip,
     QSplitter,
     QSeparator,
+    QTooltip
   },
   directives: {
     ClosePopup,

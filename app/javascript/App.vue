@@ -1,8 +1,9 @@
 <template lang='pug'>
   q-layout(view='hHh lpR fFf')#app
-    q-drawer(v-model='showDrawer' side='left' :width='100' behavior='desktop' bordered)
+    q-drawer(v-model='showDrawer' side='left' :width='120' behavior='desktop' bordered)
       q-tabs(v-model='tab' vertical)
         q-tab(name='hits' label='Задания' icon='ion-grid')
+        q-tab(name='assignments' label='На проверку' icon='ion-checkbox-outline')
         q-tab(name='gallery' label='Галерея' icon='ion-images')
         q-tab(name='tags' label='Теги' icon='ion-pricetags')
         q-tab(name='login' label='Логин' icon='ion-log-in')
@@ -11,6 +12,7 @@
         q-tab-panels(v-model='tab' keep-alive)#tab-panels
           q-tab-panel(name='hits')
             HitsGrid
+          q-tab-panel(name='assignments')
           q-tab-panel(name='gallery')
             Gallery
           q-tab-panel(name='tags')

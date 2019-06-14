@@ -20,6 +20,7 @@ Rails.application.routes.draw do
       resources :photos
       resources :assignments
       put 'assignments/:assignment_id/results', to: 'assignments#add_result'
+      get 'assignments_to_review', to: 'assignments#to_review'
 
       get 'balance', controller: 'accounts'
       get 'question', to: 'question#show'

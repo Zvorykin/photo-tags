@@ -10,12 +10,13 @@
         q-card-section
           div.text-h6 Теги изображения
           q-separator
-          q-chip(v-for="tag of imageTags" :key="tag" :color="isMarked(assignmentTags, tag)") {{tag}}
+          q-chip(v-for="tag of imageTags" :key="tag" :color="isMarked(assignmentTags, tag)"
+            outline) {{tag}}
         q-card-section
           div.text-h6 Новые теги
           q-separator
           q-chip(v-for="tag of assignmentTags" :key="tag" @click='disableTag(tag)' clickable
-          :disabled="isDisabled(tag)" :color="isMarked(imageTags, tag)") {{tag}}
+          :disabled="isDisabled(tag)" :color="isMarked(imageTags, tag)" outline) {{tag}}
         q-card-actions.justify-between
           q-btn(@click="submitAssignment(false)" color="negative" outline).col-5 Отклонить
           q-btn(@click="submitAssignment(true)" color="positive" outline).col-5 Принять

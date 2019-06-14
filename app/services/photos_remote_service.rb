@@ -3,17 +3,12 @@
 module PhotosRemoteService
   API_PHOTOS_ENDPOINT = 'https://demo-photos.icons8.com/api/frontend/v1/photos'
 
-  FIELDS = %w[id tags thumb1xUrl preview1xUrl].freeze
+  FIELDS = %w[id tags thumb1xUrl preview1xUrl filename title].freeze
 
   class << self
     def search(params)
       params_with_fields_filter = add_fields_param(params)
-      data = client.get('', params_with_fields_filter).body
-
-      {
-        photos: data['photos'],
-        total: data['total']
-      }
+      client.get('', params_with_fields_filter).body
     end
 
     # TODO: rewrite using typhoeus parallel request if needed
