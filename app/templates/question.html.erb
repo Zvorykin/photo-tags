@@ -55,12 +55,12 @@
         }
 
         function validateResult() {
-          var result = {}
-          for (var id in imagesInputNames) {
-            if (imagesInputNames.hasOwnProperty(id)) {
+          var result = []
+          for (var id in photosInputNames) {
+            if (photosInputNames.hasOwnProperty(id)) {
               var resultTags = []
 
-              var names = imagesInputNames[id]
+              var names = photosInputNames[id]
               names.forEach(function (name) {
                 var value = document.getElementsByName(name)[0].value
 
@@ -78,11 +78,14 @@
               })
 
               if (resultTags.length < MIN_TAGS_AMOUNT) {
-                alert('Some images are not tagged. Please fill minimal amount of tag fields')
+                alert('Some photos are not tagged. Please fill minimal amount of tag fields')
                 return
               }
 
-              result[id] = resultTags
+              result.push({
+                photo_id: id,
+                tags: resultTags
+              })
             }
           }
 
@@ -120,7 +123,7 @@
           action='https://www.mturk.com/mturk/externalSubmit'>
       <input type='hidden' value='' name='assignmentId' id='assignmentId'/>
 
-      <% images.each do |image| %>
+      <% photos.each do |photo| %>
         <div class='form-entry'>
           <div class='left'>
             <h4>Tags</h4>
@@ -128,11 +131,11 @@
               <input autocomplete=off
                      class='tag-field'
                      placeholder="#<%= num + 1 %>"
-                     name='<%= "input-#{num + 1}-#{image[:id]}" %>'>
+                     name='<%= "input-#{num + 1}-#{photo[:id]}" %>'>
             <% end %>
           </div>
           <div>
-            <img src='<%= image[:url] %>'>
+            <img src='<%= photo[:url] %>'>
           </div>
         </div>
       <% end %>
@@ -142,13 +145,13 @@
 
     <script language='javascript'>turkSetAssignmentID()</script>
     <script language='javascript'>
-      var imagesInputNames = <%= images_input_names.to_json %>;
+      var photosInputNames = <%= photos_input_names.to_json %>;
       var tags = <%= tags.to_json %>;
       var MIN_TAGS_AMOUNT = <%= min_tags_amount %>;
 
-      for (var key in imagesInputNames) {
-        if (imagesInputNames.hasOwnProperty(key)) {
-          var names = imagesInputNames[key]
+      for (var key in photosInputNames) {
+        if (photosInputNames.hasOwnProperty(key)) {
+          var names = photosInputNames[key]
 
           names.forEach(function (name) {
             new autoComplete({

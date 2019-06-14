@@ -20,6 +20,8 @@ gem 'mongoid', '~> 7.0'
 
 # Utils
 gem 'aws-sdk'
+gem 'faraday'
+gem 'faraday_middleware'
 
 # Swagger
 gem 'rswag-api'

@@ -3,13 +3,8 @@
 class AssignmentSerializer < Blueprinter::Base
   fields :hit_id,
          :assignment_id,
-         :assignment_status,
-         :auto_approval_time,
-         :accept_time,
+         :status,
          :submit_time,
-         :approval_time,
-         :rejection_time,
-         :deadline,
-         :answer,
-         :requester_feedback
+         :answers,
+         :results
 end

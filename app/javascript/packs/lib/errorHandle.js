@@ -1,31 +1,17 @@
 export default async (app, cb, showLoading = true) => {
-  app.$Loading.start()
   if ((app.loading === false) && showLoading) app.loading = true
 
   let res
   try {
     res = await cb()
-
-    app.$Loading.finish()
   } catch (err) {
-    console.error(err)
+    const { statusText, status, body, data } = err.response || {}
 
-    app.$Loading.error()
+    app.$q.notify({
+      message: `Error ${ status || '' }: ${ statusText || '' } \n${ body || '' }\n${ data || '' }`
+    })
 
-    const {
-      statusText: error,
-      status: code,
-      body: message,
-      data,
-    } = err.response || {}
-
-    console.dir(err.stack)
-
-    const title = `Error ${ code || '' }: ${ error || '' }`
-    const content = `${ data } \n
-       ${ err.exception || '' } ${ message || '' } ${ err.message }`.trim()
-
-    app.$Modal.error({ title, content })
+    throw err
   }
 
   if (app.loading) app.loading = false

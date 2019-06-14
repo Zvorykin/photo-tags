@@ -13,16 +13,18 @@ Rails.application.routes.draw do
   scope 'api', defaults: { format: :json } do
     scope 'v1' do
       resources :hits
-
       get 'hits/:hit_id/assignments', to: 'hits#assignments'
+      put 'hits/:hit_id/assignments', to: 'hits#update_assignments'
 
       resources :tags
       resources :photos
+      resources :assignments
+      put 'assignments/:assignment_id/results', to: 'assignments#add_result'
+      get 'assignments_to_review', to: 'assignments#review'
 
       get 'balance', controller: 'accounts'
+      get 'question', to: 'question#show'
     end
-
-    get 'question', to: 'question#show'
 
     mount Rswag::Ui::Engine => '/docs'
     mount Rswag::Api::Engine => '/docs'

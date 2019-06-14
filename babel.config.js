@@ -29,6 +29,7 @@ module.exports = function(api) {
         require('@babel/preset-env').default,
         {
           forceAllTransforms: true,
+          corejs: '3',
           useBuiltIns: 'entry',
           modules: false,
           exclude: ['transform-typeof-symbol']
@@ -36,6 +37,15 @@ module.exports = function(api) {
       ]
     ].filter(Boolean),
     plugins: [
+      [
+        "transform-imports",
+        {
+          "quasar": {
+            "transform": "quasar/dist/babel-transforms/imports.js",
+            "preventFullImport": true
+          }
+        }
+      ],
       require('babel-plugin-macros'),
       require('@babel/plugin-syntax-dynamic-import').default,
       isTestEnv && require('babel-plugin-dynamic-import-node'),

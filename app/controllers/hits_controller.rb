@@ -1,14 +1,15 @@
+# frozen_string_literal: true
+
 class HitsController < ApplicationController
   # before_action :set_hit, only: %i[show update destroy]
 
   # GET /hits
   def index
-    param! :amount, Integer
-    param! :next_token, String
+    validate_pagination_params
 
-    result = MturkService.list_hits(params)
+    result = HitsService.search(params).to_a
 
-    respond_with ListHitsResponseSerializer.render(result)
+    respond_with HitSerializer.render(result, root: :hits)
   end
 
   # GET /hits/1
@@ -23,18 +24,11 @@ class HitsController < ApplicationController
     param! :reward, Float, required: true
     param! :assignment_duration, Integer, required: true
     param! :lifetime, Integer, required: true
+    param! :max_assignments, Integer, required: true
 
-    result = MturkService.create_hit(params)
+    result = HitsService.create(params)
 
-    # p result
-
-    hash = {
-      name: '123123'
-    }
-
-    render json: hash.to_json
-
-    # respond_with hash.to_json
+    respond_with result
   end
 
   # PATCH/PUT /hits/1
@@ -52,17 +46,30 @@ class HitsController < ApplicationController
   end
 
   def assignments
+    validate_pagination_params
+    param! :hit_id, String, required: true
+    param! :assignment_statuses, String, in: %w[submitted approved rejected]
+
+    result = MturkService.hit_submitted_assignments(params)
+
+    respond_with ListHitAssignmentsResponseSerializer.render(result),
+                 location: hits_url
+  end
+
+  def update_assignments
     param! :hit_id, String, required: true
 
-    hit_id = params[:hit_id]
-    result = MturkService.hit_assignments(hit_id)
-
-    p result
+    result = MturkService.update_hit_submitted_assignments(params)
 
     hash = {}
 
-    render json: hash.to_json
+    render json: hash
   end
 
   private
+
+  def validate_pagination_params
+    param! :per_page, Integer
+    param! :page, String
+  end
 end

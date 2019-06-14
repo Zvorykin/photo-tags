@@ -1,21 +1,41 @@
-<template lang="pug">
-  #app
-    HitsGrid
+<template lang='pug'>
+  q-layout(view='hHh lpR fFf')#app
+    q-drawer(v-model='showDrawer' side='left' :width='120' behavior='desktop' bordered)
+      q-tabs(v-model='tab' vertical)
+        q-tab(name='hits' label='Задания' icon='ion-grid')
+        q-tab(name='assignments' label='На проверку' icon='ion-checkbox-outline')
+        q-tab(name='gallery' label='Галерея' icon='ion-images')
+        q-tab(name='tags' label='Теги' icon='ion-pricetags')
+        q-tab(name='login' label='Логин' icon='ion-log-in')
+    q-page-container
+      q-page
+        q-tab-panels(v-model='tab' keep-alive)#tab-panels
+          q-tab-panel(name='hits')
+            HitsGrid
+          q-tab-panel(name='assignments')
+            Assignments
+          q-tab-panel(name='gallery')
+            Gallery
+          q-tab-panel(name='tags')
+          q-tab-panel(name='login')
+
+        //router-view
 </template>
 
 <script>
   import HitsGrid from './packs/components/hits_grid'
+  import Gallery from './packs/components/gallery'
+  import Assignments from './packs/components/assignments'
 
   export default {
-    components: { HitsGrid },
+    components: { HitsGrid, Gallery, Assignments },
     data() {
-      return {}
+      return {
+        tab: 'assignments',
+        showDrawer: true,
+      }
     },
     async created() {
-      this.$Loading.config({
-        height: 5,
-      })
-
       this.axios.defaults.baseURL = `${ location.origin }/api`
       this.axios.defaults.headers.common['Content-Type'] = 'application/json'
       this.axios.defaults.headers.common['Accept'] = 'application/json'
@@ -24,31 +44,20 @@
 </script>
 
 <style>
-  @import 'packs/styles/layout.css';
-  @import 'packs/styles/card.css';
-  @import 'packs/styles/form.css';
-  @import 'packs/styles/table.css';
-
-  #tabs-admin .ivu-tabs-nav {
-    padding: 0 5px !important;
+  #tab-panels .q-tab-panel {
+    padding: 0 0 1px 0;
   }
 
-  .ivu-tabs-tab-disabled {
-    visibility: hidden;
+  .footer, .header {
+    background: white;
   }
 
-  .ivu-tabs-bar {
-    height: 35px;
+  .cards-container {
+    margin: 0;
+    padding-bottom: 15px;
   }
 
-  .drawer-footer {
-    width: 100%;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    border-top: 1px solid #e8e8e8;
-    padding: 10px 16px;
-    text-align: right;
-    background: #fff;
+  .black-text {
+    color: rgba(0, 0, 0, 0.87);
   }
 </style>

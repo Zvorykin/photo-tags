@@ -1,19 +1,15 @@
 <template lang='pug'>
-  Card(:dis-hover='true' id='card')
-    p(slot='title') HITs
-    Button(slot='extra' size='default' icon='md-refresh-circle' @click='refresh'
-      type='text' shape='circle' class='refresh-card-button')
-    Form(:labelWidth='50', inline)
-      FormItem(:labelWidth='0')
-        Button(type='primary' size='small' icon='md-add' shape='circle'
+  div
+    q-table(title='HITs' dense flat :data='table.data' :columns='table.columns'
+      :pagination.sync='table.pagination' :loading='loading' class='sticky-table'
+      separator='vertical')
+      template(v-slot:top='')
+        q-btn(dense color='primary' icon='ion-add-circle' label='Создать'
           @click='setFormVisible(true)')
-      FormItem(:labelWidth='0')
-        Button(type='success', size='small' icon='md-create' shape='circle'
-          @click='setFormVisible(true)')
-    Table(border :columns='table.columns' :data='table.data' @on-row-click='selectRow'
-      highlight-row max-height='600' :loading='loading')
-    Drawer(title='Create HIT' v-model='formVisible' placement='left' width='500')
-      HITCreateForm(v-on:hitsCreated='refresh')
+        q-space
+        q-btn(dense flat round icon='ion-refresh' @click='refresh')
+    q-dialog(v-model='formVisible' position='left')
+      HITCreateForm(@hitsCreated='refresh')
 </template>
 
 <script>
@@ -24,17 +20,17 @@
     data() {
       return {
         table: {
+          pagination: {
+            sortBy: 'created_at',
+            descending: true,
+            page: 1,
+            rowsPerPage: 0
+          },
           data: [],
           columns: [],
         },
         loading: false,
         formVisible: false,
-        styles: {
-          // height: 'calc(100% - 100px)',
-          // overflow: 'auto',
-          // paddingBottom: '53px',
-          // position: 'static'
-        },
       }
     },
     computed: {},
@@ -52,9 +48,7 @@
           url: `v1/hits`,
         })
 
-        const { hits, next_token, max_amount } = result
-
-        this.table.data = hits
+        this.table.data = result.hits
       },
       selectRow(row) {
         //   this.manager.id = row.id
@@ -66,32 +60,48 @@
     created() {
       this.table.columns = [
         {
-          title: 'Title',
-          key: 'title',
+          label: 'Заголовок',
+          name: 'title',
+          field: 'title',
+          sortable: true,
+          align: 'left',
+        },
+        {
+          label: 'Статус',
+          name: 'status',
+          field: 'status',
           sortable: true,
         },
         {
-          title: 'Status',
-          key: 'hit_status',
-          width: 100,
+          label: 'Макс. выполнений',
+          name: 'max_assignments',
+          field: 'max_assignments',
           sortable: true,
         },
         {
-          title: 'Reward',
-          key: 'reward',
-          width: 100,
+          label: 'Вознаграждение, $',
+          name: 'reward',
+          field: 'reward',
           sortable: true,
         },
         {
-          title: 'Creation time',
-          key: 'creation_time',
-          width: 200,
+          label: 'Время создания',
+          name: 'created_at',
+          field: 'created_at',
           sortable: true,
+          format: (val) => this.$moment(val).format()
         },
         {
-          title: 'Id',
-          key: 'hit_id',
-          width: 270,
+          label: 'Размещение истекает',
+          name: 'expiration_at',
+          field: 'expiration_at',
+          sortable: true,
+          format: (val) => this.$moment(val).format()
+        },
+        {
+          label: 'Hit id',
+          name: 'hit_id',
+          field: 'hit_id',
           sortable: true,
         },
       ]
@@ -101,6 +111,19 @@
   }
 </script>
 
-<style scoped>
+<style lang='stylus'>
+  .sticky-table
+    .q-table__middle
+      height calc(100% - 107px)
 
+    .q-table__top,
+    .q-table__bottom,
+    thead tr:first-child th
+      background-color #f6f6f6
+
+    thead tr:first-child th
+      position sticky
+      top 0
+      opacity 1
+      z-index 1
 </style>
