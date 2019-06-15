@@ -19,16 +19,17 @@ class HitsController < ApplicationController
 
   # POST /hits
   def create
-    param! :title, String, required: true
-    param! :description, String, required: true
-    param! :reward, Float, required: true
-    param! :assignment_duration, Integer, required: true
-    param! :lifetime, Integer, required: true
+    param! :title, String, format: /\w{5,}/
+    param! :description, String, format: /\w{10,}/
+    param! :reward, Float, required: true, min: 0
+    param! :assignment_duration, Integer, required: true, min: 1
+    param! :lifetime, Integer, required: true, min: 1
     param! :max_assignments, Integer, required: true, min: 1
     param! :hits_amount, Integer, required: true, min: 1
-    param! :photos_per_hit, Integer, required: true
+    param! :photos_per_hit, Integer, required: true, min: 1
     param! :overlap_percentage, Integer, min: 1, max: 100
     param! :tag_presence, :boolean
+    param! :query, String
 
     # TODO: need to be refactored
     # TAGS
@@ -40,7 +41,8 @@ class HitsController < ApplicationController
       packs_amount: params[:hits_amount],
       photos_per_pack: params[:photos_per_hit],
       overlap_percentage: params[:overlap_percentage],
-      tag_presence: params[:tag_presence]
+      tag_presence: params[:tag_presence],
+      query: params[:query]
     }
     photos_packs = PhotosRemoteService.get_packs(photo_params)
 

@@ -5,91 +5,43 @@
     <head>
       <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
       <!--  maybe it's better to serve autocomplete plugin by CDN but it's not necessary-->
-      <style type="text/css"><%= autocomplete_css %></style>
-      <script language='javascript'><%= autocomplete_js %></script>
+      <style type="text/css"><%= tagify_css %></style>
+      <script language='javascript'><%= tagify_js %></script>
+      <script language='javascript'><%= tagify_js_polyfill %></script>
       <script language='javascript'><%= external_hit_js %></script>
 
-      <style type="text/css">
-        .left {
-          float: left;
-          width: 300px;
-          margin-right: 15px;
-        }
-
-        .tag-field {
-          width: 100%;
-          margin-bottom: 5px;
-        }
-
-        .form-entry {
-          margin-bottom: 5px;
-          border-bottom: #5b6270 1px dashed;
-        }
-      </style>
       <script language='javascript'>
-        var PERMITTED_CHARS_REGEXP = /^[a-z ]*$/
+        function getPhotoTags(value) {
+          if (!value) return []
 
-        function getChar(event) {
-          if (event.which == null) { // IE
-            if (event.keyCode < 32) return null // special symbol
-            return String.fromCharCode(event.keyCode)
-          }
-
-          if (event.which != 0 && event.charCode != 0) { // all except IE
-            if (event.which < 32) return null // special symbol
-            return String.fromCharCode(event.which)
-          }
-
-          return null // special symbol
-        }
-
-        function keyFilter(e) {
-          if (e.ctrlKey || e.altKey || e.metaKey) return false
-          var char = getChar(e)
-
-          if (!char) return // special symbol - do not process
-
-          if (!char.toLowerCase().match(PERMITTED_CHARS_REGEXP) || e.key === 'Enter') {
-            e.preventDefault()
-          }
+          return value.reduce(function (acc, tag) {
+            if (PERMITTED_CHARS_REGEXP.test(tag.value)) acc.push(tag.value)
+            return acc
+          }, [])
         }
 
         function validateResult() {
-          var result = []
-          for (var id in photosInputNames) {
-            if (photosInputNames.hasOwnProperty(id)) {
-              var resultTags = []
+          var results = photos.map(function (photo) {
+            var tags = getPhotoTags(photo.tagify.value)
 
-              var names = photosInputNames[id]
-              names.forEach(function (name) {
-                var value = document.getElementsByName(name)[0].value
-
-                if (value && value.length) {
-                  value = PERMITTED_CHARS_REGEXP.exec(value)
-
-                  if (value && value[0] && value[0].trim().length) {
-                    value = value[0].trim()
-
-                    if (resultTags.indexOf(value) === -1) {
-                      resultTags.push(value)
-                    }
-                  }
-                }
-              })
-
-              if (resultTags.length < MIN_TAGS_AMOUNT) {
-                alert('Some photos are not tagged. Please fill minimal amount of tag fields')
-                return
-              }
-
-              result.push({
-                photo_id: id,
-                tags: resultTags
-              })
+            return {
+              photo_id: photo.id,
+              tags,
             }
+          })
+
+          var invalidResult = results.some(function (item) {
+            if (item.tags.length < MIN_TAGS_AMOUNT) {
+              return true
+            }
+          })
+
+          if (invalidResult) {
+            alert('Please fill minimal amount of tags for each photo')
+            results = null
           }
 
-          return result
+          return results
         }
 
         function submit(result) {
@@ -100,6 +52,7 @@
           resultElement.setAttribute('value', resultJson)
           resultElement.setAttribute('type', 'text')
           resultElement.setAttribute('visibility', 'hidden')
+          resultElement.setAttribute('display', 'none')
           resultElement.setAttribute('name', 'result')
           form.appendChild(resultElement)
 
@@ -118,25 +71,16 @@
     </head>
     <body>
     <form name='mturk_form' method='post' id='mturk_form'
-          onkeypress='keyFilter(event)'
           onsubmit='validateAndSubmit(event);'
           action='https://www.mturk.com/mturk/externalSubmit'>
       <input type='hidden' value='' name='assignmentId' id='assignmentId'/>
 
       <% photos.each do |photo| %>
-        <div class='form-entry'>
-          <div class='left'>
-            <h4>Tags</h4>
-            <% max_tags_amount.times do |num| %>
-              <input autocomplete=off
-                     class='tag-field'
-                     placeholder="#<%= num + 1 %>"
-                     name='<%= "input-#{num + 1}-#{photo[:id]}" %>'>
-            <% end %>
-          </div>
-          <div>
-            <img src='<%= photo[:url] %>'>
-          </div>
+        <div>
+          <input autocomplete=off
+                 placeholder="write some tags for image below (double click to edit)"
+                 name='<%= "input-#{photo[:id]}" %>'>
+          <img src='<%= photo[:url] %>'>
         </div>
       <% end %>
 
@@ -145,30 +89,25 @@
 
     <script language='javascript'>turkSetAssignmentID()</script>
     <script language='javascript'>
-      var photosInputNames = <%= photos_input_names.to_json %>;
+      var photos = <%= photos.to_json %>;
       var tags = <%= tags.to_json %>;
       var MIN_TAGS_AMOUNT = <%= min_tags_amount %>;
+      var PERMITTED_CHARS_REGEXP = /^[a-z ]*$/
 
-      for (var key in photosInputNames) {
-        if (photosInputNames.hasOwnProperty(key)) {
-          var names = photosInputNames[key]
+      photos = photos.map(function (photo) {
+        var input = document.getElementsByName(`input-${ photo.id }`)[0]
 
-          names.forEach(function (name) {
-            new autoComplete({
-              selector: 'input[name=<name>]'.replace('<name>', name),
-              minChars: 2,
-              source: function (term, suggest) {
-                term = term.toLowerCase()
-                var choices = tags
-                var suggestions = []
-                for (var i = 0; i < choices.length; i++)
-                  if (~choices[i].toLowerCase().indexOf(term)) suggestions.push(choices[i])
-                suggest(suggestions)
-              },
-            })
-          })
-        }
-      }
+        photo.tagify = new Tagify(input, {
+          whitelist: tags,
+          pattern: PERMITTED_CHARS_REGEXP,
+          dropdown: {
+            enabled: 3,
+            maxItems: 10,
+          },
+        })
+
+        return photo
+      })
     </script>
     </body>
     </html>

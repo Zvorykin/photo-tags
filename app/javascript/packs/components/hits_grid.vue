@@ -50,9 +50,6 @@
 
         this.table.data = result.hits
       },
-      selectRow(row) {
-        //   this.manager.id = row.id
-      },
       setFormVisible(value = true) {
         this.formVisible = value
       },

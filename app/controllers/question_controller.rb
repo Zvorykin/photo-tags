@@ -2,7 +2,8 @@
 
 class QuestionController < ActionController::Base
   def show
-    result = QuestionService.new(html_only: true).question
+    tags = %w[cat dog girl man]
+    result = QuestionService.new(html_only: true, tags: tags).question
 
     render inline: result
   end

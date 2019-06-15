@@ -9,7 +9,7 @@ class QuestionService
     @html_only = params[:html_only] || false
     @max_tags_amount = params[:max_tags_amount] || 10
     @photos = params[:photos]
-    @tags = params[:tags]
+    @tags = params[:tags] || []
   end
 
   def question
@@ -33,18 +33,23 @@ class QuestionService
     @template_path ||= Rails.root.join('app', 'templates', 'question.html.erb')
   end
 
-  def autocomplete_js
-    file_path = autocomplete_path.join('autocomplete.min.js')
-    @autocomplete_js ||= File.open(file_path, 'r', &:read)
+  def tagify_js
+    file_path = tagify_path.join('tagify.min.js')
+    @tagify_js ||= File.open(file_path, 'r', &:read)
   end
 
-  def autocomplete_css
-    file_path = autocomplete_path.join('autocomplete.css')
-    @autocomplete_css ||= File.open(file_path, 'r', &:read)
+  def tagify_js_polyfill
+    file_path = tagify_path.join('tagify.polyfills.min.js')
+    @tagify_js_polyfill ||= File.open(file_path, 'r', &:read)
   end
 
-  def autocomplete_path
-    Rails.root.join('vendor', 'autocomplete')
+  def tagify_css
+    file_path = tagify_path.join('tagify.css')
+    @tagify_css ||= File.open(file_path, 'r', &:read)
+  end
+
+  def tagify_path
+    Rails.root.join('vendor', 'tagify')
   end
 
   def external_hit_js
@@ -57,35 +62,23 @@ class QuestionService
   end
 
   def photos
-    @photos || [
-      {
-        id: '5ac23fd28b65880001e4b29d',
-        url: 'https://photo-cdn.icons8.com/assets/previews/744/d6be7777-9c2c-4628-8edb-6e928e3313a81x.jpg'
-      },
-      {
-        id: '5b630a448b65880001bbd7c4',
-        url: 'https://photo-cdn.icons8.com/assets/previews/344/e1aa78c4-7179-4e79-b04b-3909b2f654921x.jpg'
-      },
-      {
-        id: '5cda92cc0809980001c21cd0',
-        url: 'https://photo-cdn.icons8.com/assets/previews/220/722c033a-f1b4-4a8e-b4f2-32a85e9003f31x.jpg'
-      }
-    ]
-  end
-
-  def input_names(id)
-    (0..max_tags_amount).each_with_object([]) do |num, result|
-      result << "input-#{num + 1}-#{id}"
+    if Rails.env.development? && @photos.nil?
+      @photos = [
+        {
+          id: '5ac23fd28b65880001e4b29d',
+          url: 'https://photo-cdn.icons8.com/assets/previews/744/d6be7777-9c2c-4628-8edb-6e928e3313a81x.jpg'
+        },
+        {
+          id: '5b630a448b65880001bbd7c4',
+          url: 'https://photo-cdn.icons8.com/assets/previews/344/e1aa78c4-7179-4e79-b04b-3909b2f654921x.jpg'
+        },
+        {
+          id: '5cda92cc0809980001c21cd0',
+          url: 'https://photo-cdn.icons8.com/assets/previews/220/722c033a-f1b4-4a8e-b4f2-32a85e9003f31x.jpg'
+        }
+      ]
     end
-    # result = []
-    # max_tags_amount.times { |num| result << "input-#{num + 1}-#{id}" }
-    # result
-  end
 
-  def photos_input_names
-    photos.each_with_object({}) do |photo, result|
-      id = photo[:id]
-      result[id] = input_names(id)
-    end
+    @photos
   end
 end

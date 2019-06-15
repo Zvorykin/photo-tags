@@ -24,7 +24,7 @@ class Hit
   field :max_assignments, type: Integer
   validates :max_assignments, presence: true
 
-  field :created_at, type: DateTime, default: Time.zone.now
+  field :created_at, type: DateTime, default: Time.now
   validates :created_at, presence: true
 
   field :expiration_at, type: DateTime

@@ -6,9 +6,12 @@ export default async (app, cb, showLoading = true) => {
     res = await cb()
   } catch (err) {
     const { statusText, status, body, data } = err.response || {}
+    const { exception } = data
 
     app.$q.notify({
-      message: `Error ${ status || '' }: ${ statusText || '' } \n${ body || '' }\n${ data || '' }`
+      message: `Error ${ status || '' }: ${ statusText || '' } 
+      ${ body || '' }
+      ${ exception || data || '' }`,
     })
 
     throw err
