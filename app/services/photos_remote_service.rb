@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 module PhotosRemoteService
-  API_PHOTOS_ENDPOINT = 'https://demo-photos.icons8.com/api/frontend/v1/photos'
-
+  API_PHOTOS_ENDPOINT = 'https://demo-photos.icons8.com/api/v1/photos'
+  MAX_AMOUNT_PER_PAGE = 100
   FIELDS = %w[id tags thumb1xUrl preview1xUrl filename title].freeze
 
   class << self
     def search(params)
       params_with_fields_filter = add_fields_param(params)
-      client.get('', params_with_fields_filter).body
+      client.get('search', params_with_fields_filter).body.symbolize_keys
     end
 
     # TODO: rewrite using typhoeus parallel request if needed
@@ -16,7 +16,70 @@ module PhotosRemoteService
       Array.wrap(ids).each_with_object([]) { |id, result| result << find_by_id(id) }
     end
 
+    def get_bulk(amount, params, minimal_amount = true)
+      photos = []
+      page = 1
+      params[:per_page] = [MAX_AMOUNT_PER_PAGE, amount].min
+
+      if params[:tag_presence].present?
+        params[:filter] = params[:tag_presence] ? 'with_tags' : 'no_tags'
+      end
+
+      while photos.size < amount
+        params[:page] = page
+        res_photos = search(params)[:photos]
+
+        break if res_photos.size.zero?
+
+        photos.concat(res_photos)
+        page += 1
+      end
+
+      photos = photos.take(amount)
+      raise 'Not enough photos! Change search criteria or lower expected amount' \
+        if minimal_amount && photos.size < amount
+
+      {
+        photos: photos.map(&:symbolize_keys),
+        amount: photos.size
+      }
+    end
+
+    def get_packs(params)
+      packs_amount = params[:packs_amount]
+      photos_per_pack = params[:photos_per_pack]
+      total_amount = packs_amount * photos_per_pack
+
+      packs = get_bulk(total_amount, params)[:photos]
+              .map { |photo| { id: photo[:id], url: photo[:preview1xUrl] } }
+              .each_slice(photos_per_pack).to_a
+
+      overlap_percentage = params[:overlap_percentage] || 0
+      if overlap_percentage.positive?
+        pack_overlap_percentage = (photos_per_pack.to_f * overlap_percentage.to_f / 100)
+                                  .round
+
+        p pack_overlap_percentage
+
+        packs = packs.map do |pack|
+          pack_overlap_percentage.times do |num|
+            pack[num] = packs[0][num]
+          end
+
+          pack
+        end
+      end
+
+      p pack_overlap_percentage
+
+      packs
+    end
+
     private
+
+    def find_by_id(id)
+      client.get(id).body.slice(*FIELDS).symbolize_keys
+    end
 
     def client
       @client ||= create_client
@@ -27,10 +90,6 @@ module PhotosRemoteService
         faraday.response(:json)
         faraday.adapter(Faraday.default_adapter)
       end
-    end
-
-    def find_by_id(id)
-      client.get(id).body.slice(*FIELDS).symbolize_keys
     end
 
     def add_fields_param(params)

@@ -20,8 +20,6 @@ module MturkService
     end
 
     def create_hit(params)
-      question = QuestionService.new.question
-
       client.create_hit(
         title: params[:title],
         description: params[:description],
@@ -29,7 +27,7 @@ module MturkService
         assignment_duration_in_seconds: params[:assignment_duration],
         lifetime_in_seconds: params[:lifetime],
         max_assignments: params[:max_assignments],
-        question: question
+        question: params[:question]
       ).hit
     end
 

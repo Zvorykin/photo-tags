@@ -35,6 +35,8 @@ Vue.config.productionTip = false
 import store from '../packs/store/index'
 import App from '../App.vue'
 
+// TODO: remove Vuex if not used
+
 /* eslint-disable no-new */
 new Vue({
   components: { App },

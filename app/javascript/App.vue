@@ -18,6 +18,7 @@
             Gallery
           q-tab-panel(name='tags')
           q-tab-panel(name='login')
+            hit_create_form
 
         //router-view
 </template>
@@ -26,12 +27,13 @@
   import HitsGrid from './packs/components/hits_grid'
   import Gallery from './packs/components/gallery'
   import Assignments from './packs/components/assignments'
+  import hit_create_form from './packs/components/hit_create_form'
 
   export default {
-    components: { HitsGrid, Gallery, Assignments },
+    components: { HitsGrid, Gallery, Assignments, hit_create_form },
     data() {
       return {
-        tab: 'assignments',
+        tab: 'login',
         showDrawer: true,
       }
     },
