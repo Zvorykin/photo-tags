@@ -39,18 +39,10 @@ import {
   QChip,
   QSplitter,
   QSeparator,
-  QTooltip
+  QTooltip,
 } from 'quasar'
 
-Notify.setDefaults({
-  position: 'center',
-  timeout: 0,
-  textColor: 'white',
-  color: 'red',
-  multiLine: true,
-  icon: 'ion-alert',
-  actions: [ { icon: 'ion-close', color: 'white' } ]
-})
+Notify.setDefaults({ textColor: 'white' })
 
 export default {
   config: {},
@@ -90,7 +82,7 @@ export default {
     QChip,
     QSplitter,
     QSeparator,
-    QTooltip
+    QTooltip,
   },
   directives: {
     ClosePopup,

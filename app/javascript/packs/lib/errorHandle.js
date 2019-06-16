@@ -7,11 +7,17 @@ export default async (app, cb, showLoading = true) => {
   } catch (err) {
     const { statusText, status, body, data } = err.response || {}
     const { exception } = data
+    const message = `Error ${ status || '' }: ${ statusText || '' } ${ body || '' }
+      ${ exception || data || '' }`
 
     app.$q.notify({
-      message: `Error ${ status || '' }: ${ statusText || '' } 
-      ${ body || '' }
-      ${ exception || data || '' }`,
+      message,
+      position: 'center',
+      timeout: 0,
+      color: 'red',
+      multiLine: true,
+      icon: 'ion-alert',
+      actions: [ { icon: 'ion-close', color: 'white' } ]
     })
 
     throw err

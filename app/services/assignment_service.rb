@@ -2,7 +2,7 @@
 
 module AssignmentService
   class << self
-    def submitted_photos
+    def submitted_photos(params = {})
       photos = []
       submitted_assignments = search(status: 'submitted')
 
@@ -12,15 +12,19 @@ module AssignmentService
             result[:photo_id] == item[:photo_id]
           end
 
-          photo = PhotosRemoteService.by_ids(item[:photo_id]).first
-          photo[:assignment_id] = assignment[:assignment_id]
-          photo[:assignment_tags] = item[:tags].sort
-
-          photos << photo
+          photos << {
+            photo_id: item[:photo_id],
+            assignment_id: assignment[:assignment_id],
+            assignment_tags: item[:tags].sort
+          }
         end
       end
 
-      photos
+      photos.take(params[:limit] || 50)
+            .map do |photo|
+        remote_photo = PhotosRemoteService.by_ids(photo[:photo_id]).first
+        remote_photo.merge(photo)
+      end
     end
 
     def search(params = {})
@@ -33,16 +37,23 @@ module AssignmentService
     end
 
     def upsert_result(params)
+      photo_id = params[:photo_id]
+      new_result = {
+        photo_id: photo_id,
+        tags: params[:tags]
+      }
+
       assignment = Assignment.find_by(assignment_id: params[:assignment_id])
 
       assignment.results
-                .delete_if { |result| result[:photo_id] == params[:photo_id] }
-                .append(
-                  photo_id: params[:photo_id],
-                  tags: params[:tags]
-                )
+                .delete_if { |result| result[:photo_id] == photo_id }
+                .append(new_result)
 
-      assignment.save
+      # assignment.save
+
+      PhotosRemoteService.upsert_tags(new_result)
+
+      assignment
     end
   end
 end

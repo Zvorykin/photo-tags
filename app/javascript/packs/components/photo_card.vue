@@ -17,8 +17,10 @@
         q-space
         q-separator(vertical)
         div.buttons.q-gutter-y-md.q-pa-md
-          q-btn(color="positive" outline @click="submitAssignment(false)").full-width Принять
-          q-btn(color="negative" outline @click="submitAssignment(false)").full-width Отклонить
+          q-btn(color="positive" :loading='loading' @click="submitAssignment(false)"
+            outline).full-width Принять
+          q-btn(color="negative" :loading='loading' @click="submitAssignment(false)"
+            outline).full-width Отклонить
 </template>
 
 <script>
@@ -61,6 +63,7 @@
     data() {
       return {
         disabledTags: [],
+        loading: false,
       }
     },
     computed: {},
@@ -93,6 +96,13 @@
         })
 
         await this.$errorHandle(this, cb)
+
+        this.$q.notify({
+          color: 'secondary',
+          position: 'top',
+          message: 'Успешно выполнено!',
+          timeout: 2000
+        })
 
         const payload = {
           id: this.id,

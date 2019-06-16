@@ -51,14 +51,14 @@ module PhotosRemoteService
       total_amount = packs_amount * photos_per_pack
 
       packs = get_bulk(total_amount, params)[:photos]
-              .map { |photo| { id: photo[:id], url: photo[:preview1xUrl] } }
-              .each_slice(photos_per_pack)
-              .to_a
+                .map { |photo| { id: photo[:id], url: photo[:preview1xUrl] } }
+                .each_slice(photos_per_pack)
+                .to_a
 
       overlap_percentage = params[:overlap_percentage] || 0
       if overlap_percentage.positive?
         pack_overlap_percentage = (photos_per_pack.to_f * overlap_percentage.to_f / 100)
-                                  .round
+                                    .round
 
         packs = packs.map do |pack|
           pack_overlap_percentage.times { |num| pack[num] = packs[0][num] }
@@ -67,6 +67,23 @@ module PhotosRemoteService
       end
 
       packs
+    end
+
+    def upsert_tags(params)
+      photo_id = params[:photo_id]
+
+      photo_tags = by_ids(photo_id)
+                     .first[:tags]
+                     .map { |tag| { name: tag['title'] } }
+
+      new_tags = params[:tags].map { |tag| { name: tag } }
+      tags = photo_tags.concat(new_tags)
+
+      client.put do |req|
+        req.url "#{photo_id}/tags"
+        req.body = { tags: tags }
+        req.headers['api-key'] = 'RphYhCS6R3G_1JQVffzriWhkf2UQ2f5_'
+      end
     end
 
     private
@@ -82,7 +99,9 @@ module PhotosRemoteService
     def create_client
       Faraday.new(API_PHOTOS_ENDPOINT) do |faraday|
         faraday.response(:json)
-        faraday.adapter(Faraday.default_adapter)
+        faraday.request(:json)
+        faraday.use Faraday::Response::RaiseError
+        faraday.adapter Faraday.default_adapter
       end
     end
 

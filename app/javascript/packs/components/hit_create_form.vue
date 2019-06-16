@@ -61,8 +61,6 @@
           color: 'secondary',
           position: 'top',
           message: 'Успешно выполнено!',
-          actions: [],
-          multiLine: false,
           timeout: 2000
         })
 

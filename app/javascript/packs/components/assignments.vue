@@ -11,7 +11,7 @@
           v-bind="formatPhotoProps(photo)" @assignmentSubmitted="onAssignmentSubmitted")
     q-footer(bordered).footer
       q-toolbar.q-gutter-x-md
-        q-select(dense v-model="refreshParams.perPage" :options="perPageOptions" outlined
+        q-select(dense v-model="refreshParams.limit" :options="limitOptions" outlined
         bg-color="primary" dark options-dense)
         q-space
         q-field(borderless dense)
@@ -27,9 +27,9 @@
       return {
         photos: [],
         refreshParams: {
-          perPage: 10,
+          limit: 10,
         },
-        perPageOptions: [5, 10, 15, 20, 25, 50],
+        limitOptions: [5, 10, 15, 20, 25, 50],
         loading: false,
         total: 0,
       }

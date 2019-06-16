@@ -15,7 +15,9 @@ class AssignmentsController < ApplicationController
   end
 
   def review
-    photos = AssignmentService.submitted_photos
+    param! :limit, Integer
+
+    photos = AssignmentService.submitted_photos(params)
 
     result = {
       photos: PhotoSerializer.render_as_hash(photos, view: :with_assignment),
