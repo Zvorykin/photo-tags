@@ -4,7 +4,12 @@ export default async (app, cb, showLoading = true) => {
   let res
   try {
     res = await cb()
+
+    if (app.loading) app.loading = false
+    return res && res.data
   } catch (err) {
+    if (app.loading) app.loading = false
+
     const { statusText, status, body, data } = err.response || {}
     const { exception } = data
     const message = `Error ${ status || '' }: ${ statusText || '' } ${ body || '' }
@@ -22,7 +27,4 @@ export default async (app, cb, showLoading = true) => {
 
     throw err
   }
-
-  if (app.loading) app.loading = false
-  return res && res.data
 }

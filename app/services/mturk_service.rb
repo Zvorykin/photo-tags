@@ -5,7 +5,7 @@ module MturkService
   TEST_REGION = 'us-east-1'
 
   SUBMITTED_STATUS = 'Submitted'
-  RESULT_REGEX = /<FreeText>(\[{.*}\])<\/FreeText>/.freeze
+  RESULT_REGEX = /<FreeText>{"result":(\[.*\])}<\/FreeText>/.freeze
 
   class << self
     def balance

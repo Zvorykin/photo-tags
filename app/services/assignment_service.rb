@@ -43,17 +43,29 @@ module AssignmentService
         tags: params[:tags]
       }
 
-      assignment = Assignment.find_by(assignment_id: params[:assignment_id])
+      PhotosRemoteService.upsert_tags(new_result)
 
+      assignment = Assignment.find_by!(assignment_id: params[:assignment_id])
       assignment.results
                 .delete_if { |result| result[:photo_id] == photo_id }
                 .append(new_result)
 
-      # assignment.save
+      assignment[:status] = 'Approved' \
+        if assignment[:answers].size == assignment[:results].size
 
-      PhotosRemoteService.upsert_tags(new_result)
+      assignment.save!
 
-      assignment
+      # TODO: need to be refactored
+      related_hit = Hit.find_by!(hit_id: assignment[:hit_id])
+      approved_hit_assignments = Assignment.where(
+        hit_id: assignment[:hit_id],
+        status: 'Approved'
+      )
+
+      if related_hit[:max_assignments] == approved_hit_assignments.size
+        related_hit[:status] = 'Unassignable'
+        related_hit.save!
+      end
     end
   end
 end

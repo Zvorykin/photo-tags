@@ -23,6 +23,7 @@ class Assignment
   field :payload, type: Hash
 
   after_save do |document|
+    # updating unique tags collection
     document[:results]
       .filter { |result| result[:applied] }
       .each_with_object([]) { |result, tag_list| tag_list.concat(result[:tags]) }

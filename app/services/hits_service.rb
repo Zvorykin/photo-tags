@@ -2,7 +2,7 @@
 
 module HitsService
   class << self
-    def search(params)
+    def search(params = {})
       Hit.all
     end
 

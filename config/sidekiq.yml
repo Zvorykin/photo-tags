@@ -1,0 +1,3 @@
+:schedule:
+  SyncAssignmentsWorker:
+    every: '10s'

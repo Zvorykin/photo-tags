@@ -37,7 +37,7 @@ module PhotosRemoteService
 
       photos = photos.take(amount)
       raise 'Not enough photos! Change search criteria or lower expected amount' \
-        if minimal_amount && photos.size < amount
+        if minimal_amount.present? && photos.size < amount
 
       {
         photos: photos.map(&:symbolize_keys),
@@ -51,14 +51,14 @@ module PhotosRemoteService
       total_amount = packs_amount * photos_per_pack
 
       packs = get_bulk(total_amount, params)[:photos]
-                .map { |photo| { id: photo[:id], url: photo[:preview1xUrl] } }
-                .each_slice(photos_per_pack)
-                .to_a
+              .map { |photo| { id: photo[:id], url: photo[:preview1xUrl] } }
+              .each_slice(photos_per_pack)
+              .to_a
 
       overlap_percentage = params[:overlap_percentage] || 0
       if overlap_percentage.positive?
         pack_overlap_percentage = (photos_per_pack.to_f * overlap_percentage.to_f / 100)
-                                    .round
+                                  .round
 
         packs = packs.map do |pack|
           pack_overlap_percentage.times { |num| pack[num] = packs[0][num] }
@@ -72,12 +72,12 @@ module PhotosRemoteService
     def upsert_tags(params)
       photo_id = params[:photo_id]
 
-      photo_tags = by_ids(photo_id)
-                     .first[:tags]
-                     .map { |tag| { name: tag['title'] } }
-
-      new_tags = params[:tags].map { |tag| { name: tag } }
-      tags = photo_tags.concat(new_tags)
+      tags = by_ids(photo_id)
+             .first[:tags]
+             .map { |tag| tag['title'] }
+             .concat(params[:tags])
+             .uniq
+             .map { |tag| { name: tag } }
 
       client.put do |req|
         req.url "#{photo_id}/tags"

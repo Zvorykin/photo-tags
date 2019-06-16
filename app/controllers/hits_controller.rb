@@ -14,7 +14,7 @@ class HitsController < ApplicationController
 
   # GET /hits/1
   def show
-    render json: @hit
+    # render json: @hit
   end
 
   # POST /hits
@@ -27,7 +27,7 @@ class HitsController < ApplicationController
     param! :max_assignments, Integer, required: true, min: 1
     param! :hits_amount, Integer, required: true, min: 1
     param! :photos_per_hit, Integer, required: true, min: 1
-    param! :overlap_percentage, Integer, min: 1, max: 100
+    param! :overlap_percentage, Integer, min: 0, max: 100
     param! :tag_presence, :boolean
     param! :query, String
 
@@ -41,9 +41,10 @@ class HitsController < ApplicationController
       packs_amount: params[:hits_amount],
       photos_per_pack: params[:photos_per_hit],
       overlap_percentage: params[:overlap_percentage],
-      tag_presence: params[:tag_presence],
-      query: params[:query]
+      tag_presence: params[:tag_presence]
     }
+    photo_params[:query] = params[:query] if params[:query].present?
+
     photos_packs = PhotosRemoteService.get_packs(photo_params)
 
     # HITS
@@ -89,6 +90,8 @@ class HitsController < ApplicationController
 
   def update_assignments
     param! :hit_id, String, required: true
+
+    # SyncAssignmentsWorker.perform
 
     MturkService.update_hit_submitted_assignments(params)
 

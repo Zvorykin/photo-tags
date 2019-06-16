@@ -46,6 +46,7 @@
           hitsAmount: 5,
           photosPerHit: 10,
           overlapPercentage: 10,
+          query: '',
           tagPresence: false
         },
         loading: false

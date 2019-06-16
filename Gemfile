@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
@@ -22,6 +24,8 @@ gem 'mongoid', '~> 7.0'
 gem 'aws-sdk'
 gem 'faraday'
 gem 'faraday_middleware'
+gem 'sidekiq'
+gem 'sidekiq-scheduler'
 
 # Swagger
 gem 'rswag-api'

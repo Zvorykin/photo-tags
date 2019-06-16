@@ -10,6 +10,6 @@ class MturkAssignmentSerializer < Blueprinter::Base
          :approval_time,
          :rejection_time,
          :deadline,
-         :answers,
+         :answer,
          :requester_feedback
 end
