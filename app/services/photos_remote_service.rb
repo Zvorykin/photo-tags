@@ -82,7 +82,7 @@ module PhotosRemoteService
       client.put do |req|
         req.url "#{photo_id}/tags"
         req.body = { tags: tags }
-        req.headers['api-key'] = 'RphYhCS6R3G_1JQVffzriWhkf2UQ2f5_'
+        req.headers['api-key'] = ENV['REMOTE_API_KEY']
       end
     end
 
